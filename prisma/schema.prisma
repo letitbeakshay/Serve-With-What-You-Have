@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FormStatus {
+  OPEN
+  CLOSED
+}
+
+enum RegistrationStatus {
+  YES
+  NO
+  IN_PROCESS
+}
+
+enum ResponseStatus {
+  NEW
+  CONTACTED
+  ACTIVE
+  PAUSED
+  DECLINED
+}
+
+// A form is a named, shareable link. Every form uses the same v1 field set today.
+// fieldSetVersion points at the config in lib/field-config/ so a second field
+// set can be introduced later without touching this table.
+model Form {
+  id              String     @id @default(cuid())
+  name            String
+  slug            String     @unique
+  status          FormStatus @default(OPEN)
+  closedMessage   String?
+  fieldSetVersion String     @default("v1")
+
+  responses Response[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// One submission from one organisation. Named columns cover everything the
+// admin panel filters, searches, or shows on a card. rawAnswers keeps a full
+// snapshot of the submitted payload as a safety net against config drift.
+model Response {
+  id     String @id @default(cuid())
+  formId String
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  // Section 1: Basic identity
+  orgName      String
+  orgType      String // code from field config, e.g. "orphanage_childrens_home"
+  orgTypeOther String?
+
+  // Section 2: Registration and location
+  isRegistered        RegistrationStatus
+  registrationNumber  String?
+  yearStarted         Int?
+  city                String
+  district            String?
+  state               String
+  pinCode             String
+  fullAddress         String
+  mapsLink            String?
+
+  // Section 3: Contact
+  contactName  String
+  contactRole  String
+  phone        String
+  altPhone     String?
+  email        String?
+
+  // Section 4: Scale
+  // Shape: { "under_2": { male: number, female: number }, "2_to_5": {...}, ... }
+  headcounts     Json
+  whoServe       String[] // codes from field config
+  whoServeOther  String?
+
+  // Section 5: What they need
+  supportOffered      String[] // codes from field config, at least one required
+  supportOfferedOther String?
+  mostNeeded          String   // single code, must be one of supportOffered (or "other")
+  volunteerHelp        String[]
+  volunteerHelpOther   String?
+
+  // Presence and proof
+  website     String?
+  facebook    String?
+  instagram   String?
+  youtube     String?
+
+  additionalNotes String?
+
+  // Declarations. The exact wording per version lives in lib/field-config, which
+  // is source controlled, so version + timestamp is enough to reconstruct consent.
+  declarationsVersion    String
+  declarationsAcceptedAt DateTime
+
+  // Internal only. Never shown to the organisation.
+  status         ResponseStatus @default(NEW)
+  internalNotes  String?
+  contactedBy    String?
+  lastContactedAt DateTime?
+
+  rawAnswers Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([formId])
+  @@index([status])
+  @@index([city])
+  @@index([state])
+  @@index([orgType])
+  @@index([createdAt])
+}
+
+// Singleton row holding PIN lockout state for the single shared admin PIN.
+// One person, one PIN, so a global counter is enough, no per-user tracking.
+model AdminAuthState {
+  id             Int       @id @default(1)
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+  updatedAt      DateTime  @updatedAt
+}
