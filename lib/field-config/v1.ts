@@ -239,6 +239,7 @@ export const DECLARATIONS: { key: string; text: string }[] = [
 export const PHONE_REGEX = /^\d{10}$/;
 export const PIN_CODE_REGEX = /^\d{6}$/;
 export const URL_REGEX = /^https?:\/\/[^\s]+\.[^\s]+$/i;
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // ---------------------------------------------------------------------------
 // Steps. Each step lists the field keys shown on it, in order. showIf lets a
