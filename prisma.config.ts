@@ -8,7 +8,10 @@ export default defineConfig({
   migrations: {
     path: "prisma/migrations",
   },
+  // Migrate/introspection always use the direct (non-pooled) connection.
+  // The app's PrismaClient uses a separate driver adapter pointed at
+  // DATABASE_URL, which may be pooled, e.g. Supabase's transaction pooler.
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: process.env["DIRECT_URL"],
   },
 });
