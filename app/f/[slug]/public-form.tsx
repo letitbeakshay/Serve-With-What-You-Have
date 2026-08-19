@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   AGE_BANDS,
+  COUNTRY_CODES,
   DECLARATIONS,
   INDIAN_STATES,
   ORG_TYPE_OPTIONS,
@@ -61,6 +63,9 @@ const ORG_TYPE_SELECT_ITEMS = ORG_TYPE_GROUPS.map(([group, options]) => ({
   items: options.map((option) => ({ value: option.value, label: option.label })),
 }));
 const STATE_SELECT_ITEMS = INDIAN_STATES.map((s) => ({ value: s, label: s }));
+// Trigger shows just the short code ("+91"); the popup list shows the full
+// "India (+91)" label via each SelectItem's own children below.
+const COUNTRY_CODE_SELECT_ITEMS = COUNTRY_CODES.map((code) => ({ value: code.value, label: code.value }));
 
 type Errors = Partial<Record<FieldKey, string>>;
 
@@ -290,6 +295,17 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
     <main className="min-h-dvh bg-background px-4 py-8 sm:px-6 sm:py-12">
       <div className="mx-auto max-w-2xl">
         <header className="mb-8">
+          {!isFirstStep && (
+            <button
+              type="button"
+              onClick={goBack}
+              disabled={submitting}
+              className="mb-3 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+            >
+              <ChevronLeftIcon className="size-4" />
+              Back
+            </button>
+          )}
           <p className="text-sm font-medium text-primary">{formName}</p>
           <h1 className="mt-1 font-heading text-2xl font-semibold text-foreground sm:text-3xl">
             {step.title}
@@ -394,8 +410,10 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
                 id="yearStarted"
                 type="number"
                 inputMode="numeric"
+                max={new Date().getFullYear()}
                 value={data.yearStarted}
                 onChange={(e) => updateField("yearStarted", e.target.value)}
+                onBlur={() => onFieldBlur("yearStarted")}
               />
             </FieldBlock>
 
@@ -405,14 +423,6 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
                 value={data.city}
                 onChange={(e) => updateField("city", e.target.value)}
                 onBlur={() => onFieldBlur("city")}
-              />
-            </FieldBlock>
-
-            <FieldBlock label="District" htmlFor="district" error={errors.district}>
-              <Input
-                id="district"
-                value={data.district}
-                onChange={(e) => updateField("district", e.target.value)}
               />
             </FieldBlock>
 
@@ -498,15 +508,34 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
               error={errors.phone}
               hint="WhatsApp preferred, 10 digits."
             >
-              <Input
-                id="phone"
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                value={data.phone}
-                onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, ""))}
-                onBlur={() => onFieldBlur("phone")}
-              />
+              <div className="flex gap-2">
+                <Select
+                  items={COUNTRY_CODE_SELECT_ITEMS}
+                  value={data.phoneCountryCode}
+                  onValueChange={(value) => updateField("phoneCountryCode", value as string)}
+                >
+                  <SelectTrigger className="w-24 shrink-0" aria-label="Country code">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COUNTRY_CODES.map((code) => (
+                      <SelectItem key={code.value} value={code.value}>
+                        {code.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  className="flex-1"
+                  value={data.phone}
+                  onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, ""))}
+                  onBlur={() => onFieldBlur("phone")}
+                />
+              </div>
             </FieldBlock>
 
             <FieldBlock label="Alternate phone" htmlFor="altPhone" error={errors.altPhone}>
@@ -766,16 +795,23 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
 
         <div className="mt-8 flex gap-3">
           {!isFirstStep && (
-            <Button type="button" variant="outline" onClick={goBack} disabled={submitting} className="flex-1">
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              onClick={goBack}
+              disabled={submitting}
+              className="flex-1"
+            >
               Back
             </Button>
           )}
           {isLastStep ? (
-            <Button type="button" onClick={handleSubmit} disabled={submitting} className="flex-1">
+            <Button type="button" size="lg" onClick={handleSubmit} disabled={submitting} className="flex-1">
               {submitting ? "Submitting…" : "Submit"}
             </Button>
           ) : (
-            <Button type="button" onClick={goNext} className="flex-1">
+            <Button type="button" size="lg" onClick={goNext} className="flex-1">
               Next
             </Button>
           )}

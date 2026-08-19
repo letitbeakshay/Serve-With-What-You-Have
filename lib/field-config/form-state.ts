@@ -5,6 +5,7 @@
 
 import {
   DECLARATIONS,
+  DEFAULT_PHONE_COUNTRY_CODE,
   EMAIL_REGEX,
   PHONE_REGEX,
   PIN_CODE_REGEX,
@@ -23,13 +24,13 @@ export type ResponseFormData = {
   registrationNumber: string;
   yearStarted: string;
   city: string;
-  district: string;
   state: string;
   pinCode: string;
   fullAddress: string;
   mapsLink: string;
   contactName: string;
   contactRole: string;
+  phoneCountryCode: string;
   phone: string;
   altPhone: string;
   email: string;
@@ -58,13 +59,13 @@ export function createEmptyFormData(): ResponseFormData {
     registrationNumber: "",
     yearStarted: "",
     city: "",
-    district: "",
     state: "",
     pinCode: "",
     fullAddress: "",
     mapsLink: "",
     contactName: "",
     contactRole: "",
+    phoneCountryCode: DEFAULT_PHONE_COUNTRY_CODE,
     phone: "",
     altPhone: "",
     email: "",
@@ -129,6 +130,13 @@ function validateField(key: FieldKey, data: ResponseFormData): string | null {
       return isBlank(data.orgTypeOther) ? "Tell us what kind of organisation this is." : null;
     case "isRegistered":
       return data.isRegistered === "" ? "Let us know if you're registered." : null;
+    case "yearStarted": {
+      if (isBlank(data.yearStarted)) return null;
+      const year = Number.parseInt(data.yearStarted, 10);
+      if (!Number.isFinite(year)) return "Enter a valid year.";
+      const currentYear = new Date().getFullYear();
+      return year > currentYear ? "Year can't be in the future." : null;
+    }
     case "city":
       return isBlank(data.city) ? "Tell us your city." : null;
     case "state":

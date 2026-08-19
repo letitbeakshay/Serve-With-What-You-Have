@@ -118,6 +118,24 @@ export const INDIAN_STATES: string[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Section 3: Contact
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_PHONE_COUNTRY_CODE = "+91";
+
+export const COUNTRY_CODES: Option[] = [
+  { value: "+91", label: "India (+91)" },
+  { value: "+1", label: "USA / Canada (+1)" },
+  { value: "+44", label: "United Kingdom (+44)" },
+  { value: "+971", label: "UAE (+971)" },
+  { value: "+65", label: "Singapore (+65)" },
+  { value: "+61", label: "Australia (+61)" },
+  { value: "+94", label: "Sri Lanka (+94)" },
+  { value: "+977", label: "Nepal (+977)" },
+  { value: "+880", label: "Bangladesh (+880)" },
+];
+
+// ---------------------------------------------------------------------------
 // Section 4: Scale
 // ---------------------------------------------------------------------------
 
@@ -262,7 +280,6 @@ export type FieldKey =
   | "registrationNumber"
   | "yearStarted"
   | "city"
-  | "district"
   | "state"
   | "pinCode"
   | "fullAddress"
@@ -311,7 +328,6 @@ export const STEPS: StepDefinition[] = [
       { key: "registrationNumber", required: false, showIf: { field: "isRegistered", notEquals: "NO" } },
       { key: "yearStarted", required: false },
       { key: "city", required: true },
-      { key: "district", required: false },
       { key: "state", required: true },
       { key: "pinCode", required: true },
       { key: "fullAddress", required: true },

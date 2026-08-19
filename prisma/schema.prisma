@@ -66,18 +66,18 @@ model Response {
   registrationNumber  String?
   yearStarted         Int?
   city                String
-  district            String?
   state               String
   pinCode             String
   fullAddress         String
   mapsLink            String?
 
   // Section 3: Contact
-  contactName  String
-  contactRole  String
-  phone        String
-  altPhone     String?
-  email        String?
+  contactName      String
+  contactRole      String
+  phoneCountryCode String  @default("+91")
+  phone            String
+  altPhone         String?
+  email            String?
 
   // Section 4: Scale
   // Shape: { "under_2": { male: number, female: number }, "2_to_5": {...}, ... }
