@@ -584,7 +584,7 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      className="text-center"
+                      className="rounded-lg bg-card text-center"
                       value={data.headcounts[band.value]?.male || ""}
                       onChange={(e) => updateHeadcount(band.value, "male", e.target.value)}
                     />
@@ -592,7 +592,7 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      className="text-center"
+                      className="rounded-lg bg-card text-center"
                       value={data.headcounts[band.value]?.female || ""}
                       onChange={(e) => updateHeadcount(band.value, "female", e.target.value)}
                     />

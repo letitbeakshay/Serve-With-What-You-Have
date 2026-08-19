@@ -8,7 +8,7 @@
 // sibling file without a rewrite.
 
 export const FIELD_SET_VERSION = "v1";
-export const DECLARATIONS_VERSION = "v1";
+export const DECLARATIONS_VERSION = "v2";
 
 export type Option = {
   value: string;
@@ -231,10 +231,6 @@ export const DECLARATIONS: { key: string; text: string }[] = [
   {
     key: "accurate_and_authorised",
     text: "I confirm the information above is accurate and I am authorised to submit it on behalf of this organisation.",
-  },
-  {
-    key: "no_money_or_items_handled",
-    text: "I understand Serve With What You Have does not collect money, does not handle donated items, and does not act on behalf of my organisation.",
   },
   {
     key: "public_display",
