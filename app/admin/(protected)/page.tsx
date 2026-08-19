@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -11,6 +12,7 @@ import {
 import { prisma } from "@/lib/db";
 import { ORG_TYPE_LABELS } from "@/lib/field-config/v1";
 import { logoutAction } from "./logout-action";
+import { createForm } from "./actions";
 import { CopyLinkButton } from "./copy-link-button";
 import type { ResponseStatus } from "@/lib/generated/prisma/client";
 
@@ -58,7 +60,7 @@ export default async function AdminHomePage() {
 
       <section className="mt-6 space-y-2">
         {forms.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No forms yet.</p>
+          <p className="text-sm text-muted-foreground">No forms yet. Create one below.</p>
         ) : (
           forms.map((form) => (
             <div
@@ -73,6 +75,18 @@ export default async function AdminHomePage() {
             </div>
           ))
         )}
+
+        <form action={createForm} className="flex gap-2 pt-1">
+          <Input
+            name="name"
+            placeholder="New form name, e.g. Coimbatore Homes"
+            required
+            className="flex-1"
+          />
+          <Button type="submit" variant="outline">
+            Create form
+          </Button>
+        </form>
       </section>
 
       <div className="mt-8 flex items-center justify-between">
