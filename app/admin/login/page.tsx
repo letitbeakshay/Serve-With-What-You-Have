@@ -11,7 +11,7 @@ export default async function AdminLoginPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-6 py-16">
-      <h1 className="text-xl font-semibold text-foreground">Serve With What You Have</h1>
+      <h1 className="font-heading text-xl font-semibold text-foreground">Serve With What You Have</h1>
       <p className="mt-1 text-muted-foreground">Admin</p>
       <div className="mt-8">
         <LoginForm />

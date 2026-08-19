@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   AGE_BANDS,
@@ -52,6 +53,15 @@ const ORG_TYPE_GROUPS = (() => {
   return Array.from(groups.entries());
 })();
 
+// Base UI's <Select> only shows the human label on its trigger (instead of
+// the raw value) when given this items list directly, separate from the
+// SelectItem children rendered inside the popup.
+const ORG_TYPE_SELECT_ITEMS = ORG_TYPE_GROUPS.map(([group, options]) => ({
+  group,
+  items: options.map((option) => ({ value: option.value, label: option.label })),
+}));
+const STATE_SELECT_ITEMS = INDIAN_STATES.map((s) => ({ value: s, label: s }));
+
 type Errors = Partial<Record<FieldKey, string>>;
 
 function FieldError({ message }: { message?: string }) {
@@ -73,14 +83,16 @@ function FieldBlock({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={htmlFor} className="text-base font-medium">
-        {label}
-      </Label>
-      {children}
-      {hint && !error && <p className="text-sm text-muted-foreground">{hint}</p>}
-      <FieldError message={error} />
-    </div>
+    <Card className="rounded-2xl border-none py-5 shadow-sm ring-1 ring-border sm:py-6">
+      <CardContent className="space-y-3">
+        <Label htmlFor={htmlFor} className="font-heading text-base font-semibold text-foreground">
+          {label}
+        </Label>
+        {children}
+        {hint && !error && <p className="text-sm text-muted-foreground">{hint}</p>}
+        <FieldError message={error} />
+      </CardContent>
+    </Card>
   );
 }
 
@@ -254,34 +266,44 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
 
   if (submitted) {
     return (
-      <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-6 py-16 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Thank you</h1>
-        <p className="mt-4 text-muted-foreground">
-          We have your details. Someone from Serve With What You Have will call you to confirm
-          everything before anything goes up on the site.
-        </p>
-        <p className="mt-8 text-sm text-muted-foreground">
-          One more thing: an organisation account is coming later. There is nothing to sign up
-          for today.
-        </p>
+      <main className="flex min-h-dvh items-center justify-center bg-background px-4 py-12 sm:px-6">
+        <Card className="w-full max-w-lg rounded-3xl border-none py-10 text-center shadow-md ring-1 ring-border sm:py-14">
+          <CardContent className="flex flex-col items-center px-6 sm:px-10">
+            <h1 className="font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+              Thank you
+            </h1>
+            <p className="mt-4 text-muted-foreground">
+              We have your details. Someone from Serve With What You Have will call you to confirm
+              everything before anything goes up on the site.
+            </p>
+            <p className="mt-8 text-sm text-muted-foreground">
+              One more thing: an organisation account is coming later. There is nothing to sign up
+              for today.
+            </p>
+          </CardContent>
+        </Card>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-6 py-10 sm:py-16">
-      <div className="mb-8">
-        <p className="text-sm font-medium text-primary">{formName}</p>
-        <h1 className="mt-1 text-xl font-semibold text-foreground">{step.title}</h1>
-        <div className="mt-4">
-          <Progress value={progressValue} aria-label={`Step ${stepIndex + 1} of ${STEPS.length}`} />
-          <p className="mt-2 text-sm text-muted-foreground">
-            Step {stepIndex + 1} of {STEPS.length}
-          </p>
-        </div>
-      </div>
+    <main className="min-h-dvh bg-background px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto max-w-2xl">
+        <header className="mb-8">
+          <p className="text-sm font-medium text-primary">{formName}</p>
+          <h1 className="mt-1 font-heading text-2xl font-semibold text-foreground sm:text-3xl">
+            {step.title}
+          </h1>
+          <div className="mt-3 h-1 w-14 rounded-full bg-gradient-to-r from-primary to-primary/30" />
+          <div className="mt-6">
+            <Progress value={progressValue} aria-label={`Step ${stepIndex + 1} of ${STEPS.length}`} />
+            <p className="mt-2 text-sm text-muted-foreground">
+              Step {stepIndex + 1} of {STEPS.length}
+            </p>
+          </div>
+        </header>
 
-      <div className="space-y-6">
+        <div className="space-y-4">
         {step.id === "basic_identity" && (
           <>
             <FieldBlock label="Organisation name" htmlFor="orgName" error={errors.orgName}>
@@ -295,6 +317,7 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
 
             <FieldBlock label="Type of organisation" htmlFor="orgType" error={errors.orgType}>
               <Select
+                items={ORG_TYPE_SELECT_ITEMS}
                 value={data.orgType}
                 onValueChange={(value) => updateField("orgType", value as string)}
               >
@@ -394,7 +417,11 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
             </FieldBlock>
 
             <FieldBlock label="State" htmlFor="state" error={errors.state}>
-              <Select value={data.state} onValueChange={(value) => updateField("state", value as string)}>
+              <Select
+                items={STATE_SELECT_ITEMS}
+                value={data.state}
+                onValueChange={(value) => updateField("state", value as string)}
+              >
                 <SelectTrigger id="state" className="w-full">
                   <SelectValue placeholder="Choose your state" />
                 </SelectTrigger>
@@ -512,7 +539,7 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
               label="How many people do you currently support?"
               hint="Leave blank if you're not sure."
             >
-              <div className="space-y-3 rounded-lg border border-input p-4">
+              <div className="space-y-3 rounded-lg bg-muted/50 p-4">
                 <div className="grid grid-cols-[1fr_4.5rem_4.5rem] items-center gap-2 text-xs font-medium text-muted-foreground">
                   <span />
                   <span className="text-center">Male</span>
@@ -691,68 +718,73 @@ export function PublicForm({ formSlug, formName }: { formSlug: string; formName:
               />
             </FieldBlock>
 
-            <div className="space-y-4 border-t border-border pt-6">
-              <p className="text-base font-medium text-foreground">Before you submit</p>
-              {DECLARATIONS.map((declaration) => (
-                <label key={declaration.key} className="flex items-start gap-3">
-                  <Checkbox
-                    id={`decl-${declaration.key}`}
-                    checked={data.declarations[declaration.key] ?? false}
-                    onCheckedChange={(checked) =>
-                      updateField("declarations", {
-                        ...data.declarations,
-                        [declaration.key]: checked === true,
-                      })
-                    }
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm text-foreground">
-                    {declaration.text}
-                    {declaration.key === "consent_storage_and_display" && (
-                      <>
-                        {" "}
-                        Read our{" "}
-                        <Link href="/privacy" target="_blank" className="underline underline-offset-2">
-                          privacy policy
-                        </Link>
-                        .
-                      </>
-                    )}
-                  </span>
-                </label>
-              ))}
-              <FieldError message={errors.declarations} />
-            </div>
+            <Card className="rounded-2xl border-none py-5 shadow-sm ring-1 ring-border sm:py-6">
+              <CardContent className="space-y-4">
+                <p className="font-heading text-base font-semibold text-foreground">
+                  Before you submit
+                </p>
+                {DECLARATIONS.map((declaration) => (
+                  <label key={declaration.key} className="flex items-start gap-3">
+                    <Checkbox
+                      id={`decl-${declaration.key}`}
+                      checked={data.declarations[declaration.key] ?? false}
+                      onCheckedChange={(checked) =>
+                        updateField("declarations", {
+                          ...data.declarations,
+                          [declaration.key]: checked === true,
+                        })
+                      }
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      {declaration.text}
+                      {declaration.key === "consent_storage_and_display" && (
+                        <>
+                          {" "}
+                          Read our{" "}
+                          <Link href="/privacy" target="_blank" className="underline underline-offset-2">
+                            privacy policy
+                          </Link>
+                          .
+                        </>
+                      )}
+                    </span>
+                  </label>
+                ))}
+                <FieldError message={errors.declarations} />
+              </CardContent>
+            </Card>
           </>
         )}
-      </div>
+        </div>
 
-      {submitError && (
-        <p className="mt-6 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {submitError}
+        {submitError && (
+          <p className="mt-6 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {submitError}
+          </p>
+        )}
+
+        <div className="mt-8 flex gap-3">
+          {!isFirstStep && (
+            <Button type="button" variant="outline" onClick={goBack} disabled={submitting} className="flex-1">
+              Back
+            </Button>
+          )}
+          {isLastStep ? (
+            <Button type="button" onClick={handleSubmit} disabled={submitting} className="flex-1">
+              {submitting ? "Submitting…" : "Submit"}
+            </Button>
+          ) : (
+            <Button type="button" onClick={goNext} className="flex-1">
+              Next
+            </Button>
+          )}
+        </div>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Your answers are saved on this device as you go.
         </p>
-      )}
-
-      <div className="mt-8 flex gap-3">
-        {!isFirstStep && (
-          <Button type="button" variant="outline" onClick={goBack} disabled={submitting} className="flex-1">
-            Back
-          </Button>
-        )}
-        {isLastStep ? (
-          <Button type="button" onClick={handleSubmit} disabled={submitting} className="flex-1">
-            {submitting ? "Submitting…" : "Submit"}
-          </Button>
-        ) : (
-          <Button type="button" onClick={goNext} className="flex-1">
-            Next
-          </Button>
-        )}
       </div>
-
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        Your answers are saved on this device as you go.
-      </p>
     </main>
   );
 }
