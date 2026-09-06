@@ -9,6 +9,7 @@ import { logoutAction } from "@/app/admin/(protected)/logout-action";
 const NAV_ITEMS = [
   { href: "/admin", label: "Orphanage onboarding" },
   { href: "/admin/referrals", label: "Referrals" },
+  { href: "/admin/other-interests", label: "Other Interests" },
   { href: "/admin/stories", label: "Stories" },
 ];
 

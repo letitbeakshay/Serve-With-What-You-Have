@@ -167,6 +167,25 @@ model ReferralResponse {
   @@index([createdAt])
 }
 
+// One "show interest" popup submission from the homepage's Ways to serve
+// section, for the ways that aren't live yet (skills, time, refer-a-need).
+// Not tied to a Form -- this is a single site-wide interest capture, not a
+// shareable link.
+model InterestResponse {
+  id       String @id @default(cuid())
+  category String // "skill" | "time" | "refer"
+
+  name    String
+  phone   String
+  email   String
+  message String
+
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([createdAt])
+}
+
 // A published story on /stories/[slug]. Admin fills in title, tags, banner
 // and pastes bodyHtml directly; everything else is optional and simply
 // doesn't render when left blank.
