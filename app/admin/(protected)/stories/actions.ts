@@ -59,3 +59,42 @@ export async function createStory(formData: FormData) {
   revalidatePath("/stories");
   redirect("/admin/stories");
 }
+
+export async function updateStory(slug: string, formData: FormData) {
+  const title = String(formData.get("title") ?? "").trim();
+  const tags = parseTags(String(formData.get("tags") ?? ""));
+  const bodyHtml = String(formData.get("bodyHtml") ?? "").trim();
+  const published = formData.get("published") === "on";
+  const banner = formData.get("banner");
+
+  if (!title || !bodyHtml) {
+    throw new Error("Title and body are required.");
+  }
+
+  const existing = await prisma.story.findUnique({ where: { slug } });
+  if (!existing) {
+    throw new Error("Story not found.");
+  }
+
+  const hero = banner instanceof File && banner.size > 0 ? await saveStoryImage(banner, slug) : null;
+
+  await prisma.story.update({
+    where: { slug },
+    data: {
+      title,
+      tags,
+      bodyHtml: sanitizeStoryHtml(bodyHtml),
+      published,
+      ...(hero && {
+        heroImagePath: hero.path,
+        heroImageWidth: hero.width,
+        heroImageHeight: hero.height,
+      }),
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/stories");
+  revalidatePath(`/stories/${slug}`);
+  redirect("/admin/stories");
+}

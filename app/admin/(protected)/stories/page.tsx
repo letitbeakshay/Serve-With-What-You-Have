@@ -36,13 +36,21 @@ export default async function AdminStoriesPage() {
                   {dateFormatter.format(story.publishedAt)}
                 </p>
               </div>
-              <Link
-                href={`/stories/${story.slug}`}
-                target="_blank"
-                className="shrink-0 text-sm font-medium text-primary hover:underline"
-              >
-                View
-              </Link>
+              <div className="flex shrink-0 items-center gap-4">
+                <Link
+                  href={`/admin/stories/${story.slug}/edit`}
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  Edit
+                </Link>
+                <Link
+                  href={`/stories/${story.slug}`}
+                  target="_blank"
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  View
+                </Link>
+              </div>
             </div>
           ))
         )}
