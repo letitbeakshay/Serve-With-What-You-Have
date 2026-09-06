@@ -18,16 +18,40 @@ const sourceSerif = Source_Serif_4({
   weight: ["500", "600", "700"],
 });
 
+const SITE_TITLE = "Serve With What You Have: Give Clothes, Time, Skills & More";
+const SITE_DESCRIPTION =
+  "Connect with people who need what you already have: clothes, time, skills or blood. A simple community initiative. No money involved, just real help.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://swwyh.vercel.app"),
-  title: "Serve With What You Have",
-  description: "Onboarding for partner organisations.",
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png" },
     ],
     apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Serve With What You Have",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "A person carrying a backpack, surrounded by icons for the different ways to serve: books, home, clothes, food and community.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/og-image.jpg"],
   },
 };
 
