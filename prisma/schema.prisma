@@ -40,8 +40,9 @@ model Form {
   closedMessage   String?
   fieldSetVersion String     @default("v1")
 
-  responses       Response[]
-  simpleResponses SimpleResponse[]
+  responses         Response[]
+  simpleResponses   SimpleResponse[]
+  referralResponses ReferralResponse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -140,6 +141,25 @@ model SimpleResponse {
   orgName          String
   location         String
   referralSource   String
+
+  createdAt DateTime @default(now())
+
+  @@index([formId])
+  @@index([createdAt])
+}
+
+// One submission on the "know a home? share it with us" form -- someone
+// pointing us at an orphanage/home rather than onboarding their own.
+// referrerName is optional: they can tell us about a home anonymously.
+model ReferralResponse {
+  id     String @id @default(cuid())
+  formId String
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  referrerName String?
+  orgName      String
+  orgPhone     String
+  location     String
 
   createdAt DateTime @default(now())
 

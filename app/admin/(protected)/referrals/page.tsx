@@ -1,3 +1,6 @@
+import { prisma } from "@/lib/db";
+import { getReferralForm } from "@/lib/referral-form";
+import { CopyLinkButton } from "../copy-link-button";
 import {
   Table,
   TableBody,
@@ -6,9 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { prisma } from "@/lib/db";
-import { getOnboardingForm } from "@/lib/onboarding-form";
-import { CopyLinkButton } from "./copy-link-button";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -16,18 +16,16 @@ const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   year: "numeric",
 });
 
-export default async function AdminHomePage() {
-  const form = await getOnboardingForm();
-  const responses = await prisma.simpleResponse.findMany({
+export default async function AdminReferralsPage() {
+  const form = await getReferralForm();
+  const responses = await prisma.referralResponse.findMany({
     where: { formId: form.id },
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-      <h1 className="font-heading text-xl font-semibold text-foreground sm:text-2xl">
-        Orphanage onboarding
-      </h1>
+      <h1 className="font-heading text-xl font-semibold text-foreground sm:text-2xl">Referrals</h1>
 
       <section className="mt-6">
         <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
@@ -38,7 +36,7 @@ export default async function AdminHomePage() {
           <CopyLinkButton path={`/f/${form.slug}`} />
         </div>
         <p className="mt-2 text-sm text-muted-foreground">
-          One link. Share it with as many organisations as you like.
+          One link for the &quot;Know a home? Share it with us&quot; form. Share it with as many people as you like.
         </p>
       </section>
 
@@ -51,17 +49,17 @@ export default async function AdminHomePage() {
 
       {responses.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">
-          No responses yet. Once organisations start filling in the form, they will show up here.
+          No referrals yet. Once people tell us about a home, they will show up here.
         </p>
       ) : (
         <div className="mt-4 rounded-xl border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Association</TableHead>
-                <TableHead>Contact</TableHead>
+                <TableHead>Orphanage</TableHead>
+                <TableHead>Contact number</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead>How they heard of us</TableHead>
+                <TableHead>Referred by</TableHead>
                 <TableHead>Received</TableHead>
               </TableRow>
             </TableHeader>
@@ -69,14 +67,11 @@ export default async function AdminHomePage() {
               {responses.map((response) => (
                 <TableRow key={response.id}>
                   <TableCell className="font-medium text-foreground">{response.orgName}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {response.contactName}
-                    <span className="block text-xs">
-                      {response.phoneCountryCode} {response.phone}
-                    </span>
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{response.orgPhone}</TableCell>
                   <TableCell className="text-muted-foreground">{response.location}</TableCell>
-                  <TableCell className="max-w-64 text-muted-foreground">{response.referralSource}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {response.referrerName ?? <span className="italic">Anonymous</span>}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
                   </TableCell>
