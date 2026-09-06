@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,11 +52,16 @@ export default async function AdminHomePage() {
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       <div className="flex items-center justify-between gap-4">
         <h1 className="font-heading text-xl font-semibold text-foreground sm:text-2xl">Admin</h1>
-        <form action={logoutAction}>
-          <Button type="submit" variant="outline" size="sm">
-            Log out
-          </Button>
-        </form>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/stories" className={buttonVariants({ variant: "outline", size: "sm" })}>
+            Stories
+          </Link>
+          <form action={logoutAction}>
+            <Button type="submit" variant="outline" size="sm">
+              Log out
+            </Button>
+          </form>
+        </div>
       </div>
 
       <section className="mt-6 space-y-2">

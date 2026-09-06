@@ -19,6 +19,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://serve-with-what-you-have.vercel.app"),
   title: "Serve With What You Have",
   description: "Onboarding for partner organisations.",
 };

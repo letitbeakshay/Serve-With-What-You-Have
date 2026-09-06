@@ -124,6 +124,43 @@ model Response {
   @@index([createdAt])
 }
 
+// A published story on /stories/[slug]. Admin fills in title, tags, banner
+// and pastes bodyHtml directly; everything else is optional and simply
+// doesn't render when left blank.
+model Story {
+  id     String @id @default(cuid())
+  slug   String @unique
+
+  title  String
+  tags   String[]
+
+  heroImagePath   String
+  heroImageWidth  Int
+  heroImageHeight Int
+  heroCaption     String?
+
+  standfirst     String?
+  authorName     String   @default("Serve With What You Have")
+  authorInitials String   @default("SW")
+  publishedAt    DateTime @default(now())
+
+  bodyHtml String // sanitized on write, rendered raw inside the article's read column
+
+  facts      Json? // [{ value, label }, ...] (exactly 3 when set)
+  gave       Json? // { label, subtext, squares: ("money"|"given"|"unused")[9], primaryTag }
+  ctaHeading String?
+  ctaText    String?
+
+  relatedSlugs String[] @default([])
+
+  published Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, publishedAt])
+}
+
 // Singleton row holding PIN lockout state for the single shared admin PIN.
 // One person, one PIN, so a global counter is enough, no per-user tracking.
 model AdminAuthState {
