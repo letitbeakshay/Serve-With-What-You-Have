@@ -40,7 +40,8 @@ model Form {
   closedMessage   String?
   fieldSetVersion String     @default("v1")
 
-  responses Response[]
+  responses       Response[]
+  simpleResponses SimpleResponse[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,6 +122,28 @@ model Response {
   @@index([city])
   @@index([state])
   @@index([orgType])
+  @@index([createdAt])
+}
+
+// One submission to the simplified v2 onboarding form: name, phone,
+// association name, a free-text location, and how they heard about us.
+// The detailed Response/v1 field set above is kept for a future
+// "upgrade" of the onboarding flow, not deleted.
+model SimpleResponse {
+  id     String @id @default(cuid())
+  formId String
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  contactName      String
+  phoneCountryCode String @default("+91")
+  phone            String
+  orgName          String
+  location         String
+  referralSource   String
+
+  createdAt DateTime @default(now())
+
+  @@index([formId])
   @@index([createdAt])
 }
 

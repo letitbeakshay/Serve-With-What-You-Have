@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { PublicForm } from "./public-form";
+import { SimpleForm } from "./simple-form";
 
 export default async function PublicFormPage({
   params,
@@ -24,6 +25,13 @@ export default async function PublicFormPage({
         </p>
       </main>
     );
+  }
+
+  // v2 is the current, deliberately short onboarding form. v1 (the full
+  // detailed wizard) is kept working for any form still on that version,
+  // rather than deleted, in case we upgrade back to it later.
+  if (form.fieldSetVersion === "v2") {
+    return <SimpleForm formId={form.id} formName={form.name} />;
   }
 
   return <PublicForm formSlug={form.slug} formName={form.name} />;

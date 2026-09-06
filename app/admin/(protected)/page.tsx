@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -11,27 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { prisma } from "@/lib/db";
-import { ORG_TYPE_LABELS } from "@/lib/field-config/v1";
+import { getOnboardingForm } from "@/lib/onboarding-form";
 import { logoutAction } from "./logout-action";
-import { createForm } from "./actions";
 import { CopyLinkButton } from "./copy-link-button";
-import type { ResponseStatus } from "@/lib/generated/prisma/client";
-
-const STATUS_BADGE_CLASS: Record<ResponseStatus, string> = {
-  NEW: "border-primary/30 bg-primary/10 text-primary",
-  CONTACTED: "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400",
-  ACTIVE: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  PAUSED: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  DECLINED: "border-border bg-muted text-muted-foreground",
-};
-
-const STATUS_LABEL: Record<ResponseStatus, string> = {
-  NEW: "New",
-  CONTACTED: "Contacted",
-  ACTIVE: "Active",
-  PAUSED: "Paused",
-  DECLINED: "Declined",
-};
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -40,13 +20,11 @@ const dateFormatter = new Intl.DateTimeFormat("en-IN", {
 });
 
 export default async function AdminHomePage() {
-  const [forms, responses] = await Promise.all([
-    prisma.form.findMany({ orderBy: { createdAt: "desc" } }),
-    prisma.response.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { form: true },
-    }),
-  ]);
+  const form = await getOnboardingForm();
+  const responses = await prisma.simpleResponse.findMany({
+    where: { formId: form.id },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -64,35 +42,17 @@ export default async function AdminHomePage() {
         </div>
       </div>
 
-      <section className="mt-6 space-y-2">
-        {forms.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No forms yet. Create one below.</p>
-        ) : (
-          forms.map((form) => (
-            <div
-              key={form.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3"
-            >
-              <div className="min-w-0">
-                <p className="truncate font-medium text-foreground">{form.name}</p>
-                <p className="truncate text-sm text-muted-foreground">/f/{form.slug}</p>
-              </div>
-              <CopyLinkButton path={`/f/${form.slug}`} />
-            </div>
-          ))
-        )}
-
-        <form action={createForm} className="flex gap-2 pt-1">
-          <Input
-            name="name"
-            placeholder="New form name, e.g. Coimbatore Homes"
-            required
-            className="flex-1"
-          />
-          <Button type="submit" variant="outline">
-            Create form
-          </Button>
-        </form>
+      <section className="mt-6">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
+          <div className="min-w-0">
+            <p className="truncate font-medium text-foreground">{form.name}</p>
+            <p className="truncate text-sm text-muted-foreground">/f/{form.slug}</p>
+          </div>
+          <CopyLinkButton path={`/f/${form.slug}`} />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          One link. Share it with as many organisations as you like.
+        </p>
       </section>
 
       <div className="mt-8 flex items-center justify-between">
@@ -111,11 +71,10 @@ export default async function AdminHomePage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Organisation</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>City</TableHead>
+                <TableHead>Association</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>How they heard of us</TableHead>
                 <TableHead>Received</TableHead>
               </TableRow>
             </TableHeader>
@@ -124,22 +83,13 @@ export default async function AdminHomePage() {
                 <TableRow key={response.id}>
                   <TableCell className="font-medium text-foreground">{response.orgName}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {ORG_TYPE_LABELS[response.orgType] ?? response.orgTypeOther ?? response.orgType}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {response.city}, {response.state}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
                     {response.contactName}
                     <span className="block text-xs">
                       {response.phoneCountryCode} {response.phone}
                     </span>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={STATUS_BADGE_CLASS[response.status]}>
-                      {STATUS_LABEL[response.status]}
-                    </Badge>
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{response.location}</TableCell>
+                  <TableCell className="max-w-64 text-muted-foreground">{response.referralSource}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
                   </TableCell>
