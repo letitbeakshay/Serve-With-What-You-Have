@@ -48,16 +48,10 @@ export function SiteFooter() {
             <h4>Legal</h4>
             <ul>
               <li>
-                <Link href="/privacy">Privacy policy</Link>
+                <a href="https://swwyh.vercel.app/privacy">Privacy policy</a>
               </li>
               <li>
-                <a href="#">Terms of use</a>
-              </li>
-              <li>
-                <a href="#">Disclaimer</a>
-              </li>
-              <li>
-                <a href="#">Contact</a>
+                <a href="mailto:servewithwhatyouhave@gmail.com">Contact</a>
               </li>
             </ul>
           </div>
