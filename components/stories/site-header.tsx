@@ -7,7 +7,7 @@ import { BrandMark } from "./brand-mark";
 const NAV_LINKS = [
   { href: "/#ways", label: "Ways to serve" },
   { href: "/#how", label: "How it works" },
-  { href: "/#scenes", label: "Stories" },
+  { href: "/stories", label: "Stories" },
   { href: "/#orgs", label: "For organisations" },
 ];
 
