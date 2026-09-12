@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New Life to Old Clothes</title>
-<meta name="description" content="Someone near you needs what you stopped wearing. Tell us what you have on WhatsApp. We collect it, wash and sort it, and take it to a home that has asked for it.">
+<meta name="description" content="Someone near you needs what you stopped wearing. Book a free pickup. We collect it, wash and sort it, and take it to a home that has asked for it.">
 <meta property="og:title" content="New Life to Old Clothes">
-<meta property="og:description" content="Someone near you needs what you stopped wearing. Tell us what you have on WhatsApp. We collect it, wash and sort it, and take it to a home that has asked for it.">
+<meta property="og:description" content="Someone near you needs what you stopped wearing. Book a free pickup. We collect it, wash and sort it, and take it to a home that has asked for it.">
 <meta property="og:image" content="https://swwyh.vercel.app/new-life-to-old-clothes/og-image.png">
 <meta property="og:image:width" content="1536">
 <meta property="og:image:height" content="1024">
@@ -15,7 +15,7 @@
 <meta property="og:url" content="https://swwyh.vercel.app/new-life-to-old-clothes">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="New Life to Old Clothes">
-<meta name="twitter:description" content="Someone near you needs what you stopped wearing. Tell us what you have on WhatsApp. We collect it, wash and sort it, and take it to a home that has asked for it.">
+<meta name="twitter:description" content="Someone near you needs what you stopped wearing. Book a free pickup. We collect it, wash and sort it, and take it to a home that has asked for it.">
 <meta name="twitter:image" content="https://swwyh.vercel.app/new-life-to-old-clothes/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -107,9 +107,7 @@ p{margin:0}
 
 /* images */
 .hero-img{border-radius:var(--r);overflow:hidden;background:var(--clay-wash);line-height:0}
-.hero-img img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;display:block}
-.fig{border-radius:var(--r);overflow:hidden;background:var(--clay-wash);line-height:0}
-.fig img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.hero-img img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 
 /* hero load: the stack settles */
 .rise{opacity:0;transform:translateY(16px);animation:rise .7s cubic-bezier(.2,.85,.3,1) forwards}
@@ -128,10 +126,9 @@ p{margin:0}
 .strip-in div{padding:30px 34px;border-left:1px solid var(--line)}
 .strip-in div:first-child{border-left:0;padding-left:0}
 .strip-in b{
-  display:block;font-family:var(--display);font-size:1.3rem;font-weight:600;
-  letter-spacing:-.02em;margin-bottom:4px;
+  display:block;font-family:var(--display);font-size:1.06rem;font-weight:600;
+  letter-spacing:-.02em;line-height:1.32;
 }
-.strip-in span{font-size:.9rem;color:var(--muted)}
 
 /* ---------- sections ---------- */
 section{padding:92px 0}
@@ -146,12 +143,14 @@ section{padding:92px 0}
 .head h2{margin-bottom:18px}
 .head p{color:var(--ink-soft)}
 
-/* why band */
-.why{background:var(--paper-2)}
-.why-in{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.why p{color:var(--ink-soft);font-size:1.06rem}
-.why p+p{margin-top:20px}
-.why b{color:var(--ink);font-weight:600}
+/* promise band */
+.promise{background:var(--paper-2)}
+.promise-in{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.promise p{color:var(--ink-soft);font-size:1.06rem}
+.promise p+p{margin-top:20px}
+.promise b{color:var(--ink);font-weight:600}
+.fig{border-radius:var(--r);overflow:hidden;background:var(--clay-wash);line-height:0}
+.fig img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 
 /* ---------- tiers ---------- */
 .tiers{display:flex;flex-direction:column;gap:18px}
@@ -159,7 +158,7 @@ section{padding:92px 0}
   display:grid;grid-template-columns:300px 1fr;gap:36px;align-items:start;
   border:1.5px solid var(--line);border-radius:var(--r);padding:30px 34px;background:var(--paper);
 }
-.tier:first-child{border-color:var(--leaf);border-width:2px}
+.tier:nth-child(1),.tier:nth-child(2){border-color:var(--leaf);border-width:2px}
 .tier-lab{display:flex;gap:15px;align-items:flex-start}
 .tier-mk{
   width:30px;height:30px;border-radius:9px;flex:none;
@@ -167,7 +166,7 @@ section{padding:92px 0}
 }
 .tier-mk svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .tier-mk.good{background:var(--leaf)}
-.tier-mk.cycle{background:var(--clay)}
+.tier-mk.cycle{background:var(--leaf)}
 .tier-mk.stop{background:var(--muted)}
 .tier-lab h3{margin-bottom:6px}
 .tier-lab p{font-size:.91rem;color:var(--muted);line-height:1.5}
@@ -178,7 +177,9 @@ section{padding:92px 0}
 }
 .chips.muted span{color:var(--muted);background:transparent;border:1px dashed var(--line)}
 .tier-note{
-  margin-top:24px;font-size:.95rem;color:var(--muted);
+  margin-top:22px;background:var(--clay-wash);border-radius:var(--r);
+  padding:24px 30px;font-size:1.06rem;font-weight:500;color:var(--ink);
+  font-family:var(--display);letter-spacing:-.015em;line-height:1.4;
 }
 @media(max-width:860px){
   .tier{grid-template-columns:1fr;gap:22px;padding:26px}
@@ -198,17 +199,25 @@ section{padding:92px 0}
   transition:opacity .55s cubic-bezier(.2,.8,.3,1),transform .55s cubic-bezier(.2,.8,.3,1);
 }
 .step .dot{
-  width:40px;height:40px;border-radius:12px;background:var(--clay);color:#fff;
+  width:52px;height:52px;border-radius:15px;background:var(--clay);color:#fff;
   display:flex;align-items:center;justify-content:center;margin-bottom:18px;
-  font-family:var(--display);font-weight:600;font-size:1.02rem;
+  position:relative;
   transform:scale(.55);transition:transform .5s cubic-bezier(.2,1.35,.4,1);
+}
+.step .dot svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.step .dot .num{
+  position:absolute;top:-7px;left:-7px;width:22px;height:22px;border-radius:7px;
+  background:var(--paper);color:var(--ink);font-style:normal;
+  font-family:var(--display);font-weight:600;font-size:.76rem;
+  display:flex;align-items:center;justify-content:center;
 }
 .step h3{color:var(--paper);margin-bottom:8px}
 .step p{color:rgba(252,251,249,.7);font-size:.95rem}
 
 /* horizontal wires inside a row */
 .row .step:not(:last-child)::after{
-  content:"";position:absolute;top:48px;right:-22px;width:22px;height:1.5px;
+  content:"";position:absolute;top:54px;right:-22px;width:22px;height:1.5px;
   background:var(--wire);transform:scaleX(0);transform-origin:left;
   transition:transform .38s ease;
 }
@@ -269,21 +278,32 @@ section{padding:92px 0}
 }
 
 /* ---------- where they go ---------- */
-.dest{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.dcard{
+.dest{display:flex;flex-direction:column;gap:20px}
+.drow{
+  display:grid;grid-template-columns:.86fr 1.14fr;gap:0;
   border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;
-  background:var(--paper);display:flex;flex-direction:column;
+  background:var(--paper);align-items:stretch;
 }
-.dimg{aspect-ratio:16/10;overflow:hidden;background:var(--clay-wash)}
+.drow.flip{grid-template-columns:1.14fr .86fr}
+.drow.flip .dimg{order:2}
+.drow.flip .dbd{order:1}
+.dimg{overflow:hidden;background:var(--clay-wash);min-height:250px}
 .dimg img{width:100%;height:100%;object-fit:cover;display:block}
-.dbd{padding:24px 26px 26px}
-.dbd h3{margin-bottom:8px}
-.dbd p{font-size:.94rem;color:var(--ink-soft)}
-.dcard.recycle{background:var(--ink);border-color:var(--ink);justify-content:center}
-.dcard.recycle h3{color:var(--paper)}
-.dcard.recycle p{color:rgba(252,251,249,.72)}
-@media(max-width:940px){.dest{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){.dest{grid-template-columns:1fr}}
+.dbd{padding:clamp(28px,3.4vw,46px);display:flex;flex-direction:column;justify-content:center}
+.dbd h3{font-size:1.5rem;letter-spacing:-.025em;margin-bottom:12px}
+.dbd p{font-size:1.02rem;color:var(--ink-soft);max-width:46ch}
+.drow.recycle{
+  grid-template-columns:1fr;background:var(--ink);border-color:var(--ink);
+}
+.drow.recycle .dbd{padding:clamp(30px,4vw,48px)}
+.drow.recycle h3{color:var(--paper)}
+.drow.recycle p{color:rgba(252,251,249,.72);max-width:60ch}
+@media(max-width:820px){
+  .drow,.drow.flip{grid-template-columns:1fr}
+  .drow.flip .dimg{order:0}
+  .drow.flip .dbd{order:0}
+  .dimg{min-height:0;aspect-ratio:16/10}
+}
 
 /* ---------- inline cta bands ---------- */
 .cta-band{padding:0}
@@ -368,7 +388,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
 
 /* ---------- responsive ---------- */
 @media(max-width:940px){
-  .hero-in,.why-in,.where-in{grid-template-columns:1fr;gap:44px}
+  .hero-in,.promise-in{grid-template-columns:1fr;gap:44px}
   .story-in{grid-template-columns:1fr}
   .simg{height:auto}
   .simg img{aspect-ratio:16/9}
@@ -384,7 +404,8 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   .strip-in div:first-child{border-top:0}
   .hero-act .btn{flex:1 1 100%;white-space:normal}
   .step{padding:24px 22px 22px}
-  .step .dot{width:36px;height:36px;margin-bottom:14px}
+  .step .dot{width:46px;height:46px;margin-bottom:14px}
+  .step .dot svg{width:23px;height:23px}
   .final{padding:66px 0}
 }
 @media(prefers-reduced-motion:reduce){
@@ -432,43 +453,25 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
         <div>
           <span class="kicker rise"><em></em>Currently serving Coimbatore</span>
           <h1 class="rise">Someone near you needs what you stopped wearing.</h1>
-          <p class="lead rise">Most cupboards hold a bag of clothes nobody has worn in a year. Send us a message about yours. We collect it, get it ready, and carry it to a home that has asked for it.</p>
+          <p class="lead rise">Do you have clothes you do not really use anymore? Let us know and we collect them, clean them, and deliver them to someone in need.</p>
           <div class="hero-act rise">
-            <a class="btn btn-wa" href="#">
+            <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
-              Tell us what you have on WhatsApp
+              Book a free pickup
             </a>
-            <a class="btn btn-line" href="#take">See what we can take</a>
-          </div>
+            </div>
         </div>
 
         <div class="hero-img rise">
-          <img src="/new-life-to-old-clothes/hero-cupboard.jpg" width="900" height="900" fetchpriority="high" alt="Standing in front of an open cupboard full of folded clothes, deciding what to pass on">
+          <img src="/new-life-to-old-clothes/hero-packing.jpg" width="900" height="900" fetchpriority="high" alt="Packing unused clothes into a box at home">
         </div>
       </div>
 
       <div class="strip">
         <div class="strip-in">
-          <div><b>One message</b><span>The whole thing starts on WhatsApp</span></div>
-          <div><b>Nothing to pay</b><span>Free, and we never collect money</span></div>
-          <div><b>You stay updated</b><span>We notify you until it reaches someone</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHY -->
-  <section class="why">
-    <div class="wrap">
-      <div class="why-in">
-        <div class="fig">
-          <img src="/new-life-to-old-clothes/why-folded-stack.jpg" loading="lazy" decoding="async" alt="A folded stack of clothes on a table beside a packed box">
-        </div>
-        <div>
-          <h2>The clothes are ready. The knowing is the hard part.</h2>
-          <p style="margin-top:22px">When we ask people why the bag is still in the cupboard, almost nobody says they did not want to give it away. They say they were not sure anyone would want it.</p>
-          <p>Would a home take used clothes, or only new ones? Would they mind that two shirts have a small mark? Is it worth driving over with three bags and being told, politely, that they cannot use any of it?</p>
-          <p><b>So we ask first.</b> Homes and shelters tell us what they are short of and what sizes they need. When you tell us what you have, we already know who has asked for it.</p>
+          <div><b>Initiate a pickup on WhatsApp</b></div>
+          <div><b>Free. The pickup, the cleaning, finding a person in need, dropping it off.</b></div>
+          <div><b>We keep you updated on the progress your donation is making.</b></div>
         </div>
       </div>
     </div>
@@ -478,8 +481,8 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   <section id="take">
     <div class="wrap">
       <div class="head">
-        <h2>Send almost anything.<br class="lb">We sort out the rest.</h2>
-        <p>You do not have to judge whether something is good enough. Put it all in one bag and send it. Here is exactly what happens to each kind of thing once it reaches us.</p>
+        <h2>We accept all kinds<br class="lb">of unused clothing.</h2>
+        <p>Put it all in a bag and pass it on to us. We will do the rest.</p>
       </div>
 
       <div class="tiers">
@@ -489,7 +492,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
             <span class="tier-mk good"><svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg></span>
             <div>
               <h3>Still wearable</h3>
-              <p>Washed, sorted, and taken to a home that asked for it.</p>
+              <p>Washed, sorted, and given to someone in need.</p>
             </div>
           </div>
           <div class="chips">
@@ -513,7 +516,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
             <span class="tier-mk cycle"><svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13.5-3.5L20 8"/><path d="M20 4v4h-4"/><path d="M20 15a8 8 0 0 1-13.5 3.5L4 16"/><path d="M4 20v-4h4"/></svg></span>
             <div>
               <h3>Too worn to wear</h3>
-              <p>Sent for recycling and turned back into new cloth. Never passed to a home.</p>
+              <p>Will be recycled or upcycled to better use.</p>
             </div>
           </div>
           <div class="chips">
@@ -530,7 +533,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
             <span class="tier-mk stop"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
             <div>
               <h3>Please keep these back</h3>
-              <p>The only three things we cannot do anything useful with.</p>
+              
             </div>
           </div>
           <div class="chips muted">
@@ -542,7 +545,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
 
       </div>
 
-      <p class="tier-note">Unsure about something? Send a photo on WhatsApp and we will tell you in a minute.</p>
+      <p class="tier-note">Having doubts about what you can donate? Send us a picture and we will help you.</p>
     </div>
   </section>
 
@@ -550,29 +553,12 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   <section class="cta-band">
     <div class="wrap">
       <div class="cta-in">
-        <p class="cta-line">Still not sure whether yours counts?</p>
+        <p class="cta-line">Having doubts about<br class="lb">what you can donate?</p>
         <a class="btn btn-wa" href="#">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
-          Tell us what you have on WhatsApp
+          Book a free pickup
         </a>
-        <p class="cta-note">Send one photo. We will tell you in a minute, and there is no wrong answer.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- WASHING -->
-  <section class="why">
-    <div class="wrap">
-      <div class="why-in">
-        <div>
-          <h2>Wash it if you can. Send it anyway if you cannot.</h2>
-          <p style="margin-top:22px">A washed bag saves us a step, and we would always rather have one. But we know how it goes. The bag is packed, the week gets away from you, and it sits by the door for another month.</p>
-          <p>So do not let the washing be the reason it stays in the house. <b>Every bag that reaches us is washed properly at our end before it goes anywhere.</b> Send it as it is and we will take it from there.</p>
-          <p>The only thing we ask is that nothing goes in wet, because damp cloth spoils whatever is packed beside it.</p>
-        </div>
-        <div class="fig">
-          <img src="/new-life-to-old-clothes/wash-line.jpg" loading="lazy" decoding="async" alt="Washed clothes drying on a line above folded stacks on a sorting table">
-        </div>
+        <p class="cta-note">Send us a picture and we will help you.</p>
       </div>
     </div>
   </section>
@@ -581,27 +567,26 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   <section class="steps-band">
     <div class="wrap">
       <div class="head">
-        <h2>What happens after you send<br class="lb">that message.</h2>
-        <p>Six steps. Only the second one needs anything from you.</p>
+        <h2>The journey your clothes go on<br class="lb">after your donation.</h2>
       </div>
 
       <div class="flow" id="steps">
 
         <div class="row">
           <div class="step">
-            <span class="dot">1</span>
-            <h3>You send one message</h3>
-            <p>Tell us roughly what you have and which area you are in. A photo of the pile is enough.</p>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/></svg><i class="num">1</i></span>
+            <h3>You message us</h3>
+            <p>A photo of the pile and your area is enough.</p>
           </div>
           <div class="step">
-            <span class="dot">2</span>
-            <h3>You drop it at a collection point</h3>
-            <p>We share the nearest one and its hours. If you cannot get there, ask and we will try to arrange a pickup.</p>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15V8h11v7"/><path d="M13 10h4l3 3v2h-7"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg><i class="num">2</i></span>
+            <h3>We pick it up</h3>
+            <p>Free, at a time that suits you. Or drop it at a collection point near you.</p>
           </div>
           <div class="step">
-            <span class="dot">3</span>
-            <h3>We wash and sort every piece</h3>
-            <p>Washed, checked piece by piece, separated by type and size. What cannot be worn is set aside for recycling.</p>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18H6z"/><circle cx="12" cy="13" r="4"/><path d="M9 6.5h2"/></svg><i class="num">3</i></span>
+            <h3>We wash and sort it</h3>
+            <p>Every piece washed, checked and separated by type and size.</p>
           </div>
         </div>
 
@@ -609,19 +594,19 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
 
         <div class="row">
           <div class="step">
-            <span class="dot">4</span>
-            <h3>We match it to a real request</h3>
-            <p>One bag rarely goes to one place. We split it by what each home has asked for, so the shirts may go one way and the bedsheets another. Nothing leaves storage until someone has asked for it.</p>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7v5H3z"/><path d="M14 6h7v5h-7z"/><path d="M8.5 17.5h7"/><path d="M6.5 11v6.5"/><path d="M17.5 11v6.5"/></svg><i class="num">4</i></span>
+            <h3>We match it to a request</h3>
+            <p>One bag rarely goes to one place. We divide it by what each home has asked for.</p>
           </div>
           <div class="step">
-            <span class="dot">5</span>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5 12 4l8 4.5v7L12 20l-8-4.5z"/><path d="M4 8.5 12 13l8-4.5"/><path d="M12 13v7"/></svg><i class="num">5</i></span>
             <h3>We deliver it in your name</h3>
-            <p>We carry it to them and hand it over. It is still your giving. We only carry it across.</p>
+            <p>We hand it over. The giving is still yours.</p>
           </div>
           <div class="step">
-            <span class="dot">6</span>
-            <h3>We notify you where it all went</h3>
-            <p>A message when it is sorted, and another once it has reached the homes it was matched to, so you know where each part of it ended up.</p>
+            <span class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 1 6 6v4l2 3H4l2-3V9a6 6 0 0 1 6-6z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg><i class="num">6</i></span>
+            <h3>We tell you where it went</h3>
+            <p>A message when it is sorted, and again when it reaches someone.</p>
           </div>
         </div>
 
@@ -659,7 +644,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
         <p class="cta-line">That is the whole process.<br class="lb">Your part is the first two steps.</p>
         <a class="btn btn-wa" href="#">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
-          Tell us what you have on WhatsApp
+          Book a free pickup
         </a>
         <p class="cta-note">One message starts it. Everything after that is ours to handle.</p>
       </div>
@@ -667,9 +652,9 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   </section>
 
   <!-- PROMISE -->
-  <section class="why">
+  <section class="promise">
     <div class="wrap">
-      <div class="why-in">
+      <div class="promise-in">
         <div class="fig">
           <img src="/new-life-to-old-clothes/sort-storage.jpg" loading="lazy" decoding="async" alt="Storage shelves of folded clothes labelled by size, with separate boxes marked ready for homes and for recycling">
         </div>
@@ -692,47 +677,54 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
       </div>
 
       <div class="dest">
-        <div class="dcard">
+
+        <div class="drow">
           <div class="dimg"><img src="/new-life-to-old-clothes/home-children.jpg" loading="lazy" decoding="async" alt="A stack of folded clothes being handed to a child at a children's home"></div>
           <div class="dbd">
             <h3>Children's homes</h3>
             <p>School age cotton runs out fastest here. Shirts, shorts, frocks and uniforms in sizes four to fourteen.</p>
           </div>
         </div>
-        <div class="dcard">
+
+        <div class="drow flip">
           <div class="dimg"><img src="/new-life-to-old-clothes/home-elderly.jpg" loading="lazy" decoding="async" alt="Folded bedsheets being handed to a resident in the common room of an old age home"></div>
           <div class="dbd">
             <h3>Old age homes</h3>
             <p>Bedsheets, towels and simple daily wear. Soft cotton and easy fastenings matter more than size here.</p>
           </div>
         </div>
-        <div class="dcard">
+
+        <div class="drow">
           <div class="dimg"><img src="/new-life-to-old-clothes/home-shelter.jpg" loading="lazy" decoding="async" alt="Helping someone try on a pair of shoes at a night shelter, with folded blankets stacked nearby"></div>
           <div class="dbd">
             <h3>Night shelters</h3>
             <p>Warm layers, blankets and footwear, mostly for men. Hard wearing items matter far more here than anything smart.</p>
           </div>
         </div>
-        <div class="dcard">
+
+        <div class="drow flip">
           <div class="dimg"><img src="/new-life-to-old-clothes/home-school.jpg" loading="lazy" decoding="async" alt="Children in school uniform beside folded shirts and school bags at a community school"></div>
           <div class="dbd">
             <h3>Community schools</h3>
             <p>Uniforms, plain white shirts and school bags, usually needed in the weeks before a new term.</p>
           </div>
         </div>
-        <div class="dcard">
+
+        <div class="drow">
           <div class="dimg"><img src="/new-life-to-old-clothes/home-family.jpg" loading="lazy" decoding="async" alt="A stack of folded clothes handed over at a family doorstep"></div>
           <div class="dbd">
             <h3>Families nearby</h3>
             <p>Where a home tells us of a household close by that is short of something specific.</p>
           </div>
         </div>
-        <div class="dcard recycle">
+
+        <div class="drow recycle">
           <div class="dbd">
             <h3>And the rest, to recycling</h3>
             <p>Anything too worn to wear goes to a textile recycler and comes back as new cloth. It never reaches a home as someone else's problem to throw away.</p>
           </div>
         </div>
+
       </div>
     </div>
   </section>
@@ -744,7 +736,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
         <p class="cta-line">Somewhere on that list, there is a place waiting for what is in your cupboard.</p>
         <a class="btn btn-wa" href="#">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
-          Tell us what you have on WhatsApp
+          Book a free pickup
         </a>
         <p class="cta-note">It takes a minute to find out which one.</p>
       </div>
@@ -805,11 +797,11 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
         </details>
         <details>
           <summary>Is there any cost, now or later?</summary>
-          <p>None. This is free and we do not collect money at any point. If anyone asks you to pay something in our name, please tell us.</p>
+          <p>None. The pickup, the cleaning and the delivery are all free, and we do not ask you for money at any point. If anyone asks you to pay something in our name, please tell us.</p>
         </details>
         <details>
           <summary>Can I give money instead?</summary>
-          <p>Not through us. We do not take payments of any kind. If you want to give money, take it directly to a home you have chosen.</p>
+          <p>Not at the moment. We do not have that facility right now, so there is no way to send money through us. If you want to give money today, take it directly to a home you have chosen.</p>
         </details>
       </div>
     </div>
@@ -823,7 +815,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
         <p>Whatever is in there, send us a message about it. It takes a minute, and we will handle everything that comes after.</p>
         <a class="btn btn-wa" href="#">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
-          Tell us what you have on WhatsApp
+          Book a free pickup
         </a>
         <p class="assure">One photo is enough to start. We usually reply the same day, between 8am and 12pm.</p>
       </div>
@@ -835,11 +827,10 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
 <footer>
   <div class="wrap">
     <div class="f-in">
-      <p>New Life to Old Clothes is an initiative of Serve With What You Have, an independent community initiative. We collect, wash, sort and store the clothes you give, and deliver them to homes that have asked for them. We do not collect money or process payments of any kind.</p>
+      <p>New Life to Old Clothes is an initiative of Serve With What You Have, an independent community initiative. We collect, wash, sort and store the clothes you give, and deliver them to homes that have asked for them. We do not currently collect money or process payments.</p>
       <div class="f-links">
-        <a href="/">Serve With What You Have</a>
-        <a href="#">Privacy policy</a>
-        <a href="#">Contact</a>
+        <a href="https://swwyh.vercel.app/">Serve With What You Have</a>
+        <a href="https://swwyh.vercel.app/privacy">Privacy policy</a>
       </div>
     </div>
   </div>
