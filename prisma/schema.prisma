@@ -245,3 +245,20 @@ model AdminAuthState {
   lockedUntil    DateTime?
   updatedAt      DateTime  @updatedAt
 }
+
+// A teammate the owner has given admin access to. The owner sets the first
+// password; mustResetPassword forces them to choose their own on first login.
+// The owner themself still logs in with the PIN and has no row here.
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+
+  mustResetPassword Boolean @default(true)
+
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

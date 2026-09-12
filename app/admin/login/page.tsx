@@ -1,12 +1,11 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ADMIN_SESSION_COOKIE, isValidSessionToken } from "@/lib/admin-auth";
+import { getCurrentAdmin } from "@/lib/admin-session";
 import { LoginForm } from "./login-form";
 
 export default async function AdminLoginPage() {
-  const cookieStore = await cookies();
-  if (isValidSessionToken(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) {
-    redirect("/admin");
+  const admin = await getCurrentAdmin();
+  if (admin) {
+    redirect(admin.kind === "user" && admin.user.mustResetPassword ? "/admin/reset-password" : "/admin");
   }
 
   return (

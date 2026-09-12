@@ -1,17 +1,21 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { ADMIN_SESSION_COOKIE, isValidSessionToken } from "@/lib/admin-auth";
+import { getCurrentAdmin } from "@/lib/admin-session";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 
 export default async function ProtectedAdminLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  if (!isValidSessionToken(cookieStore.get(ADMIN_SESSION_COOKIE)?.value)) {
+  const admin = await getCurrentAdmin();
+  if (!admin) {
     redirect("/admin/login");
+  }
+  // A teammate on the password the owner gave them can't see any data until
+  // they've chosen their own. The reset page lives outside this layout.
+  if (admin.kind === "user" && admin.user.mustResetPassword) {
+    redirect("/admin/reset-password");
   }
 
   return (
     <div className="flex min-h-dvh flex-col sm:flex-row">
-      <AdminSidebar />
+      <AdminSidebar isOwner={admin.kind === "owner"} />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
