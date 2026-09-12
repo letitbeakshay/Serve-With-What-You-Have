@@ -77,6 +77,39 @@ p{margin:0}
 .btn-sm{padding:11px 20px;font-size:.92rem;border-radius:11px}
 .btn-sm svg{width:17px;height:17px}
 :focus-visible{outline:2.5px solid var(--clay-deep);outline-offset:3px;border-radius:6px}
+.btn[disabled]{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+/* ---------- pickup modal ---------- */
+.pickup-overlay{
+  position:fixed;inset:0;background:rgba(60,58,59,.45);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  z-index:100;opacity:0;pointer-events:none;transition:opacity .22s ease;
+}
+.pickup-overlay.open{opacity:1;pointer-events:auto}
+.pickup-card{
+  background:var(--paper);border-radius:var(--r);max-width:420px;width:100%;
+  padding:clamp(26px,4vw,36px);position:relative;max-height:90vh;overflow-y:auto;
+  transform:translateY(12px) scale(.98);transition:transform .22s ease;
+}
+.pickup-overlay.open .pickup-card{transform:translateY(0) scale(1)}
+.pickup-close{
+  position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;
+  width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+.pickup-close:hover{background:var(--paper-2);color:var(--ink)}
+.pickup-card h3{margin-top:8px;padding-right:30px}
+.pickup-note{margin-top:10px;color:var(--ink-soft);font-size:.92rem;line-height:1.55}
+.pickup-field{margin-top:18px}
+.pickup-field label{display:block;font-size:.86rem;font-weight:600;color:var(--ink);margin-bottom:7px}
+.pickup-field input{
+  width:100%;border:1.5px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 14px;font-family:var(--body);font-size:.95rem;color:var(--ink);
+  background:var(--paper);transition:border-color .18s ease;
+}
+.pickup-field input:focus{outline:none;border-color:var(--clay)}
+.pickup-error{color:#B3452F;font-size:.82rem;margin-top:6px;min-height:1em}
+.pickup-card form .btn{width:100%;margin-top:22px;justify-content:center}
 
 /* ---------- top bar ---------- */
 .bar{padding:24px 0 0}
@@ -455,7 +488,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
           <h1 class="rise">Someone near you needs what you stopped wearing.</h1>
           <p class="lead rise">Do you have clothes you do not really use anymore? Let us know and we collect them, clean them, and deliver them to someone in need.</p>
           <div class="hero-act rise">
-            <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
+            <a class="btn btn-wa js-pickup-trigger" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
               Book a free pickup
             </a>
@@ -554,7 +587,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
     <div class="wrap">
       <div class="cta-in">
         <p class="cta-line">Having doubts about<br class="lb">what you can donate?</p>
-        <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-wa js-pickup-trigger" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
           Book a free pickup
         </a>
@@ -642,7 +675,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
     <div class="wrap">
       <div class="cta-in">
         <p class="cta-line">That is the whole process.<br class="lb">Your part is the first two steps.</p>
-        <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-wa js-pickup-trigger" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
           Book a free pickup
         </a>
@@ -734,7 +767,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
     <div class="wrap">
       <div class="cta-in">
         <p class="cta-line">Somewhere on that list, there is a place waiting for what is in your cupboard.</p>
-        <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-wa js-pickup-trigger" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
           Book a free pickup
         </a>
@@ -818,7 +851,7 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
       <div class="final-in">
         <h2>Go and look in the bottom of your cupboard.</h2>
         <p>Whatever is in there, send us a message about it. It takes a minute, and we will handle everything that comes after.</p>
-        <a class="btn btn-wa" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
+        <a class="btn btn-wa js-pickup-trigger" href="https://wa.me/918072711138?text=Hi%2C%20I%20have%20some%20clothes%20to%20donate." target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
           Book a free pickup
         </a>
@@ -841,6 +874,35 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
   </div>
 </footer>
 
+<div class="pickup-overlay" id="pickupOverlay" aria-hidden="true">
+  <div class="pickup-card" role="dialog" aria-modal="true" aria-labelledby="pickupTitle">
+    <button class="pickup-close" type="button" id="pickupClose" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <h3 id="pickupTitle">Book a free pickup</h3>
+    <p class="pickup-note">Leave your name and number. Once we have them, we will take you to WhatsApp to arrange the pickup.</p>
+
+    <form id="pickupForm">
+      <div class="pickup-field">
+        <label for="pickupName">Your name</label>
+        <input id="pickupName" name="name" autocomplete="name">
+        <p class="pickup-error" data-error-for="name"></p>
+      </div>
+      <div class="pickup-field">
+        <label for="pickupPhone">Mobile number</label>
+        <input id="pickupPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel">
+        <p class="pickup-error" data-error-for="phone"></p>
+      </div>
+      <p class="pickup-error" id="pickupFormError"></p>
+      <button class="btn btn-wa" type="submit" id="pickupSubmit" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.19 8.19 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.06s.89 2.39 1.01 2.56c.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.19.21-.58.21-1.08.14-1.19-.06-.11-.22-.17-.47-.29Z"/></svg>
+        Continue to WhatsApp
+      </button>
+    </form>
+  </div>
+</div>
+
 <script>
 (function(){
   var steps=document.getElementById('steps');
@@ -856,6 +918,90 @@ footer{border-top:1px solid var(--line);padding:44px 0 40px}
       steps.classList.add('go');
     }
   }
+})();
+
+/* "book a free pickup" popup: capture name + number, then send to WhatsApp */
+(function(){
+  var overlay=document.getElementById('pickupOverlay');
+  var form=document.getElementById('pickupForm');
+  var nameInput=document.getElementById('pickupName');
+  var phoneInput=document.getElementById('pickupPhone');
+  var submitBtn=document.getElementById('pickupSubmit');
+  var formErrorEl=document.getElementById('pickupFormError');
+  var waUrl='';
+
+  function clearErrors(){
+    document.querySelectorAll('.pickup-error').forEach(function(el){el.textContent='';});
+  }
+  function updateSubmitState(){
+    var phoneDigits=phoneInput.value.replace(/\D/g,'');
+    submitBtn.disabled=!(nameInput.value.trim().length>0 && phoneDigits.length>=7 && phoneDigits.length<=15);
+  }
+  nameInput.addEventListener('input',updateSubmitState);
+  phoneInput.addEventListener('input',updateSubmitState);
+
+  function openModal(url){
+    waUrl=url;
+    form.reset();
+    clearErrors();
+    updateSubmitState();
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+
+  document.querySelectorAll('.js-pickup-trigger').forEach(function(el){
+    el.addEventListener('click',function(e){
+      e.preventDefault();
+      openModal(el.getAttribute('href'));
+    });
+  });
+  document.getElementById('pickupClose').addEventListener('click',closeModal);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closeModal();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&overlay.classList.contains('open'))closeModal();
+  });
+
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    clearErrors();
+    formErrorEl.textContent='';
+    submitBtn.disabled=true;
+    var originalHtml=submitBtn.innerHTML;
+    submitBtn.textContent='Sending…';
+    fetch('/api/pickup-interest',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:nameInput.value,phone:phoneInput.value})
+    }).then(function(res){
+      return res.json().then(function(json){return {ok:res.ok,json:json};});
+    }).then(function(result){
+      if(result.json&&result.json.ok){
+        closeModal();
+        window.open(waUrl,'_blank','noopener,noreferrer');
+      }else if(result.json&&result.json.fieldErrors){
+        submitBtn.innerHTML=originalHtml;
+        updateSubmitState();
+        Object.keys(result.json.fieldErrors).forEach(function(key){
+          var el=document.querySelector('[data-error-for="'+key+'"]');
+          if(el)el.textContent=result.json.fieldErrors[key];
+        });
+      }else{
+        submitBtn.innerHTML=originalHtml;
+        updateSubmitState();
+        formErrorEl.textContent='Something went wrong. Please try again.';
+      }
+    }).catch(function(){
+      submitBtn.innerHTML=originalHtml;
+      updateSubmitState();
+      formErrorEl.textContent='Something went wrong. Please try again.';
+    });
+  });
 })();
 </script>
 </body>

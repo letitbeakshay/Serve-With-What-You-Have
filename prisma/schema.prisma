@@ -186,6 +186,20 @@ model InterestResponse {
   @@index([createdAt])
 }
 
+// One "book a free pickup" popup submission from the New Life to Old Clothes
+// page. Captured before we send the person on to WhatsApp, so we know how
+// many people click through even if they never send the WhatsApp message.
+model PickupInterestResponse {
+  id String @id @default(cuid())
+
+  name  String
+  phone String
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // A published story on /stories/[slug]. Admin fills in title, tags, banner
 // and pastes bodyHtml directly; everything else is optional and simply
 // doesn't render when left blank.
