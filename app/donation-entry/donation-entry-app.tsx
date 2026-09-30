@@ -2,6 +2,7 @@
 
 import type { FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { Baby, Backpack, Briefcase, Mars, Package, Shirt, Venus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -79,61 +80,16 @@ function IconBox({
   );
 }
 
-function IconIntro({ children }: { children: ReactNode }) {
-  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">{children}</svg>;
-}
-
-const MaleIcon = () => (
-  <IconIntro>
-    <circle cx="12" cy="6.5" r="2.7" />
-    <path d="M8.5 21v-6.5H6.5l1.8-5.5h7.4l1.8 5.5h-2V21" strokeLinecap="round" strokeLinejoin="round" />
-  </IconIntro>
-);
-const FemaleIcon = () => (
-  <IconIntro>
-    <circle cx="12" cy="6.5" r="2.7" />
-    <path d="M8.5 21l1.2-7.5-2.7-2.5L9.5 6h5l2.5 5-2.7 2.5L15.5 21" strokeLinecap="round" strokeLinejoin="round" />
-  </IconIntro>
-);
-const GeneralIcon = () => (
-  <IconIntro>
-    <path d="M3 7.5 12 3l9 4.5-9 4.5-9-4.5Z" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3 7.5v9L12 21l9-4.5v-9" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 12v9" strokeLinecap="round" />
-  </IconIntro>
-);
-const AdultIcon = () => (
-  <IconIntro>
-    <rect x="8" y="7" width="8" height="6" rx="1" strokeLinejoin="round" />
-    <path d="M9.5 7V5.5a2.5 2.5 0 0 1 5 0V7" strokeLinecap="round" />
-    <path d="M8 10.5h8" strokeLinecap="round" />
-  </IconIntro>
-);
-const TeenIcon = () => (
-  <IconIntro>
-    <rect x="6.5" y="7.5" width="11" height="13" rx="3" strokeLinejoin="round" />
-    <path d="M9 7.5V5.3a3 3 0 0 1 6 0v2.2" strokeLinecap="round" />
-    <rect x="9" y="11" width="6" height="4" rx="1" strokeLinejoin="round" />
-  </IconIntro>
-);
-const ChildIcon = () => (
-  <IconIntro>
-    <rect x="9.5" y="10" width="5" height="9" rx="2" strokeLinejoin="round" />
-    <path d="M10.5 10V7.3a1.5 1.5 0 0 1 3 0V10" strokeLinecap="round" />
-    <circle cx="12" cy="5" r="1.2" />
-    <path d="M9.5 13.5h5" strokeLinecap="round" />
-  </IconIntro>
-);
-const HangerIcon = () => (
-  <IconIntro>
-    <path d="M12 3.5a1.8 1.8 0 1 1 1.6 2.7L12 7.3V8.8" strokeLinecap="round" strokeLinejoin="round" />
-    <path
-      d="M12 8.8c4.2 1.7 8 4.1 8 6.6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1c0-2.5 3.8-4.9 8-6.6Z"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </IconIntro>
-);
+// Thin, named wrappers around lucide-react's icons (already a project
+// dependency) so each step's markup reads by meaning, not by which stock
+// icon it happens to be.
+const MaleIcon = () => <Mars size={22} strokeWidth={2} />;
+const FemaleIcon = () => <Venus size={22} strokeWidth={2} />;
+const GeneralIcon = () => <Package size={22} strokeWidth={2} />;
+const AdultIcon = () => <Briefcase size={22} strokeWidth={2} />;
+const TeenIcon = () => <Backpack size={22} strokeWidth={2} />;
+const ChildIcon = () => <Baby size={22} strokeWidth={2} />;
+const GarmentIcon = () => <Shirt size={18} strokeWidth={2} />;
 
 function BackBar({ title, onBack }: { title: string; onBack?: () => void }) {
   return (
@@ -321,6 +277,10 @@ export function DonationEntryApp() {
   }
 
   function switchVolunteer() {
+    // Clear the actual session cookie, not just local state -- otherwise a
+    // reload re-reads the still-valid cookie and logs the old volunteer
+    // straight back in at the donor step.
+    fetch("/api/donation-entry/logout", { method: "POST" }).catch(() => {});
     setVolunteerName(null);
     setSelectedDonor(null);
     setDonors(null);
@@ -473,7 +433,7 @@ export function DonationEntryApp() {
                 className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-border bg-card px-2 py-3 text-center transition-colors active:border-primary active:bg-primary/5"
               >
                 <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <HangerIcon />
+                  <GarmentIcon />
                 </span>
                 <span className="text-sm font-semibold text-foreground">{g}</span>
               </button>
