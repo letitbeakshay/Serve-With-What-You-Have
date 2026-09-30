@@ -13,7 +13,7 @@ export async function GET() {
 
   const donors = await prisma.clothDonation.findMany({
     orderBy: { donatedAt: "desc" },
-    select: { id: true, donorName: true, phone: true, donatedAt: true },
+    select: { id: true, donorNumber: true, donorName: true, phone: true, donatedAt: true },
   });
 
   return NextResponse.json({ ok: true, donors });

@@ -1,21 +1,19 @@
 "use client";
 
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  AGE_CATEGORIES,
   AGE_CATEGORY_LABELS,
   GARMENTS_BY_GENDER,
-  GENDERS,
   GENDER_LABELS,
   type AgeCategory,
   type Gender,
 } from "@/lib/garment-catalog";
 
-type Donor = { id: string; donorName: string; phone: string; donatedAt: string };
+type Donor = { id: string; donorNumber: number; donorName: string; phone: string; donatedAt: string };
 
 type Step = "gate" | "donor" | "gender" | "age" | "garment" | "quantity" | "added";
 
@@ -26,8 +24,9 @@ const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   timeZone: "UTC",
 });
 
-// A big, single-tap card. Everything in this flow is one of these so a
-// volunteer never has to type unless they're entering a name or a number.
+// A big, single-tap row. Used for the donor search list, where each option
+// carries a name plus identifying sub-details (phone, date) that a small
+// icon box has no room for.
 function OptionCard({
   label,
   sublabel,
@@ -48,6 +47,93 @@ function OptionCard({
     </button>
   );
 }
+
+// A big square tap target with an icon on top and a label below. Used for
+// every fixed-choice step (gender, age, garment) so the whole screen reads
+// as a grid of boxes rather than a list of rows.
+function IconBox({
+  icon,
+  label,
+  sublabel,
+  full,
+  onClick,
+}: {
+  icon: ReactNode;
+  label: string;
+  sublabel?: string;
+  full?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border-2 border-border bg-card px-3 py-4 text-center transition-colors active:border-primary active:bg-primary/5 ${full ? "col-span-2" : ""}`}
+    >
+      <span className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <span className="text-base font-semibold text-foreground">{label}</span>
+      {sublabel && <span className="text-xs text-muted-foreground">{sublabel}</span>}
+    </button>
+  );
+}
+
+function IconIntro({ children }: { children: ReactNode }) {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">{children}</svg>;
+}
+
+const MaleIcon = () => (
+  <IconIntro>
+    <circle cx="12" cy="6.5" r="2.7" />
+    <path d="M8.5 21v-6.5H6.5l1.8-5.5h7.4l1.8 5.5h-2V21" strokeLinecap="round" strokeLinejoin="round" />
+  </IconIntro>
+);
+const FemaleIcon = () => (
+  <IconIntro>
+    <circle cx="12" cy="6.5" r="2.7" />
+    <path d="M8.5 21l1.2-7.5-2.7-2.5L9.5 6h5l2.5 5-2.7 2.5L15.5 21" strokeLinecap="round" strokeLinejoin="round" />
+  </IconIntro>
+);
+const GeneralIcon = () => (
+  <IconIntro>
+    <path d="M3 7.5 12 3l9 4.5-9 4.5-9-4.5Z" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 7.5v9L12 21l9-4.5v-9" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 12v9" strokeLinecap="round" />
+  </IconIntro>
+);
+const AdultIcon = () => (
+  <IconIntro>
+    <rect x="8" y="7" width="8" height="6" rx="1" strokeLinejoin="round" />
+    <path d="M9.5 7V5.5a2.5 2.5 0 0 1 5 0V7" strokeLinecap="round" />
+    <path d="M8 10.5h8" strokeLinecap="round" />
+  </IconIntro>
+);
+const TeenIcon = () => (
+  <IconIntro>
+    <rect x="6.5" y="7.5" width="11" height="13" rx="3" strokeLinejoin="round" />
+    <path d="M9 7.5V5.3a3 3 0 0 1 6 0v2.2" strokeLinecap="round" />
+    <rect x="9" y="11" width="6" height="4" rx="1" strokeLinejoin="round" />
+  </IconIntro>
+);
+const ChildIcon = () => (
+  <IconIntro>
+    <rect x="9.5" y="10" width="5" height="9" rx="2" strokeLinejoin="round" />
+    <path d="M10.5 10V7.3a1.5 1.5 0 0 1 3 0V10" strokeLinecap="round" />
+    <circle cx="12" cy="5" r="1.2" />
+    <path d="M9.5 13.5h5" strokeLinecap="round" />
+  </IconIntro>
+);
+const HangerIcon = () => (
+  <IconIntro>
+    <path d="M12 3.5a1.8 1.8 0 1 1 1.6 2.7L12 7.3V8.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path
+      d="M12 8.8c4.2 1.7 8 4.1 8 6.6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1c0-2.5 3.8-4.9 8-6.6Z"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </IconIntro>
+);
 
 function BackBar({ title, onBack }: { title: string; onBack?: () => void }) {
   return (
@@ -152,7 +238,10 @@ export function DonationEntryApp() {
     const q = donorFilter.trim().toLowerCase();
     if (!q) return donors;
     return donors.filter(
-      (d) => d.donorName.toLowerCase().includes(q) || d.phone.toLowerCase().includes(q),
+      (d) =>
+        d.donorName.toLowerCase().includes(q) ||
+        d.phone.toLowerCase().includes(q) ||
+        String(d.donorNumber).includes(q),
     );
   }, [donors, donorFilter]);
 
@@ -319,7 +408,7 @@ export function DonationEntryApp() {
             {filteredDonors.map((donor) => (
               <OptionCard
                 key={donor.id}
-                label={donor.donorName}
+                label={`#${donor.donorNumber} · ${donor.donorName}`}
                 sublabel={`${donor.phone} · ${dateFormatter.format(new Date(donor.donatedAt))}`}
                 onClick={() => pickDonor(donor)}
               />
@@ -330,37 +419,49 @@ export function DonationEntryApp() {
 
       {step === "gender" && selectedDonor && (
         <>
-          <BackBar title={selectedDonor.donorName} onBack={() => setStep("donor")} />
+          <BackBar
+            title={`#${selectedDonor.donorNumber} · ${selectedDonor.donorName}`}
+            onBack={() => setStep("donor")}
+          />
           <p className="mb-4 text-sm text-muted-foreground">Who is this item for?</p>
-          <div className="space-y-3">
-            {GENDERS.map((g) => (
-              <OptionCard
-                key={g}
-                label={GENDER_LABELS[g]}
-                sublabel={g === "GENERAL" ? "Bedsheets, blankets, towels..." : undefined}
-                onClick={() => pickGender(g)}
-              />
-            ))}
+          <div className="grid grid-cols-2 gap-3">
+            <IconBox icon={<MaleIcon />} label={GENDER_LABELS.MALE} onClick={() => pickGender("MALE")} />
+            <IconBox icon={<FemaleIcon />} label={GENDER_LABELS.FEMALE} onClick={() => pickGender("FEMALE")} />
+            <IconBox
+              icon={<GeneralIcon />}
+              label={GENDER_LABELS.GENERAL}
+              sublabel="Bedsheets, blankets, towels..."
+              full
+              onClick={() => pickGender("GENERAL")}
+            />
           </div>
         </>
       )}
 
-      {step === "age" && gender && (
-        <>
-          <BackBar title={GENDER_LABELS[gender]} onBack={() => setStep("gender")} />
-          <p className="mb-4 text-sm text-muted-foreground">Age category?</p>
-          <div className="space-y-3">
-            {AGE_CATEGORIES.map((a) => (
-              <OptionCard key={a} label={AGE_CATEGORY_LABELS[a]} onClick={() => pickAge(a)} />
-            ))}
-          </div>
-        </>
-      )}
-
-      {step === "garment" && gender && (
+      {step === "age" && gender && selectedDonor && (
         <>
           <BackBar
-            title="What is it?"
+            title={`#${selectedDonor.donorNumber} · ${GENDER_LABELS[gender]}`}
+            onBack={() => setStep("gender")}
+          />
+          <p className="mb-4 text-sm text-muted-foreground">Age category?</p>
+          <div className="grid grid-cols-2 gap-3">
+            <IconBox icon={<AdultIcon />} label={AGE_CATEGORY_LABELS.ADULT} onClick={() => pickAge("ADULT")} />
+            <IconBox icon={<TeenIcon />} label={AGE_CATEGORY_LABELS.TEEN} onClick={() => pickAge("TEEN")} />
+            <IconBox
+              icon={<ChildIcon />}
+              label={AGE_CATEGORY_LABELS.CHILD}
+              full
+              onClick={() => pickAge("CHILD")}
+            />
+          </div>
+        </>
+      )}
+
+      {step === "garment" && gender && selectedDonor && (
+        <>
+          <BackBar
+            title={`#${selectedDonor.donorNumber} · What is it?`}
             onBack={() => setStep(gender === "GENERAL" ? "gender" : "age")}
           />
           <div className="grid grid-cols-2 gap-2.5">
@@ -369,18 +470,21 @@ export function DonationEntryApp() {
                 key={g}
                 type="button"
                 onClick={() => pickGarment(g)}
-                className="min-h-14 rounded-xl border-2 border-border bg-card px-3 py-2 text-center text-sm font-semibold text-foreground transition-colors active:border-primary active:bg-primary/5"
+                className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-border bg-card px-2 py-3 text-center transition-colors active:border-primary active:bg-primary/5"
               >
-                {g}
+                <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <HangerIcon />
+                </span>
+                <span className="text-sm font-semibold text-foreground">{g}</span>
               </button>
             ))}
           </div>
         </>
       )}
 
-      {step === "quantity" && garmentType && (
+      {step === "quantity" && garmentType && selectedDonor && (
         <>
-          <BackBar title={garmentType} onBack={() => setStep("garment")} />
+          <BackBar title={`#${selectedDonor.donorNumber} · ${garmentType}`} onBack={() => setStep("garment")} />
           <p className="text-sm text-muted-foreground">How many?</p>
           <div className="mt-4 flex items-center justify-center gap-4">
             <button
@@ -428,11 +532,11 @@ export function DonationEntryApp() {
             {lastAdded.quantity} &times; {lastAdded.garmentType}
             {lastAdded.ageCategory ? ` (${GENDER_LABELS[lastAdded.gender]}, ${AGE_CATEGORY_LABELS[lastAdded.ageCategory]})` : ` (${GENDER_LABELS[lastAdded.gender]})`}
             <br />
-            for {selectedDonor.donorName}
+            for #{selectedDonor.donorNumber} · {selectedDonor.donorName}
           </p>
           <div className="mt-8 w-full space-y-3">
             <Button onClick={addAnotherItem} className="h-12 w-full text-base">
-              Add another item for {selectedDonor.donorName}
+              Add another item for #{selectedDonor.donorNumber}
             </Button>
             <Button onClick={finishDonor} variant="outline" className="h-12 w-full text-base">
               Done, choose another donor

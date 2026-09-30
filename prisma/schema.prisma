@@ -205,6 +205,10 @@ model PickupInterestResponse {
 model ClothDonation {
   id String @id @default(cuid())
 
+  // A short, human-friendly number (#1, #2, ...) volunteers and the admin
+  // can read out loud or write on a bag -- the cuid id is not meant for that.
+  donorNumber Int @unique @default(autoincrement())
+
   donorName String
   phone     String
   email     String?

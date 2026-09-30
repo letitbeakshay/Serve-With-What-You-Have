@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { AGE_CATEGORY_LABELS, GENDER_LABELS, type AgeCategory, type Gender } from "@/lib/garment-catalog";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteVolunteerEntry } from "./actions";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -21,7 +23,7 @@ export default async function AdminVolunteerEntriesPage() {
   const [items, byVolunteer] = await Promise.all([
     prisma.donationItem.findMany({
       orderBy: { createdAt: "desc" },
-      include: { donation: { select: { donorName: true, phone: true } } },
+      include: { donation: { select: { donorNumber: true, donorName: true, phone: true } } },
     }),
     prisma.donationItem.groupBy({
       by: ["volunteerName"],
@@ -73,10 +75,12 @@ export default async function AdminVolunteerEntriesPage() {
               <TableRow>
                 <TableHead>When</TableHead>
                 <TableHead>Volunteer</TableHead>
+                <TableHead>Donor ID</TableHead>
                 <TableHead>Donor</TableHead>
                 <TableHead>For</TableHead>
                 <TableHead>Item</TableHead>
                 <TableHead className="text-right">Qty</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -86,6 +90,7 @@ export default async function AdminVolunteerEntriesPage() {
                     {dateTimeFormatter.format(item.createdAt)}
                   </TableCell>
                   <TableCell className="font-medium text-foreground">{item.volunteerName}</TableCell>
+                  <TableCell className="text-muted-foreground">#{item.donation.donorNumber}</TableCell>
                   <TableCell className="text-muted-foreground">{item.donation.donorName}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {GENDER_LABELS[item.gender as Gender]}
@@ -93,6 +98,14 @@ export default async function AdminVolunteerEntriesPage() {
                   </TableCell>
                   <TableCell className="text-muted-foreground">{item.garmentType}</TableCell>
                   <TableCell className="text-right text-muted-foreground">{item.quantity}</TableCell>
+                  <TableCell className="text-right">
+                    <form action={deleteVolunteerEntry}>
+                      <input type="hidden" name="id" value={item.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Remove
+                      </Button>
+                    </form>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -50,6 +50,7 @@ export default async function AdminDonationsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Mobile number</TableHead>
                 <TableHead>Email</TableHead>
@@ -60,6 +61,7 @@ export default async function AdminDonationsPage() {
             <TableBody>
               {donations.map((donation) => (
                 <TableRow key={donation.id}>
+                  <TableCell className="text-muted-foreground">#{donation.donorNumber}</TableCell>
                   <TableCell className="font-medium text-foreground">{donation.donorName}</TableCell>
                   <TableCell className="text-muted-foreground">{donation.phone}</TableCell>
                   <TableCell className="text-muted-foreground">
