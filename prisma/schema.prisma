@@ -212,7 +212,42 @@ model ClothDonation {
 
   createdAt DateTime @default(now())
 
+  items DonationItem[]
+
   @@index([donatedAt])
+}
+
+enum DonationGender {
+  MALE
+  FEMALE
+  GENERAL // items with no gender/age split: bedsheets, blankets, towels...
+}
+
+enum DonationAgeCategory {
+  ADULT
+  TEEN
+  CHILD
+}
+
+// One garment line-item within a donation, logged by a volunteer through the
+// /donation-entry mobile flow: pick the donor, then gender, then (unless
+// GENERAL) age category, then garment type and how many.
+model DonationItem {
+  id String @id @default(cuid())
+
+  donation   ClothDonation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  donationId String
+
+  volunteerName String
+  gender        DonationGender
+  ageCategory   DonationAgeCategory?
+  garmentType   String
+  quantity      Int
+
+  createdAt DateTime @default(now())
+
+  @@index([donationId])
+  @@index([createdAt])
 }
 
 // A published story on /stories/[slug]. Admin fills in title, tags, banner

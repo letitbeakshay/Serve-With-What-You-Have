@@ -1,0 +1,445 @@
+"use client";
+
+import type { FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  AGE_CATEGORIES,
+  AGE_CATEGORY_LABELS,
+  GARMENTS_BY_GENDER,
+  GENDERS,
+  GENDER_LABELS,
+  type AgeCategory,
+  type Gender,
+} from "@/lib/garment-catalog";
+
+type Donor = { id: string; donorName: string; phone: string; donatedAt: string };
+
+type Step = "gate" | "donor" | "gender" | "age" | "garment" | "quantity" | "added";
+
+const dateFormatter = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+// A big, single-tap card. Everything in this flow is one of these so a
+// volunteer never has to type unless they're entering a name or a number.
+function OptionCard({
+  label,
+  sublabel,
+  onClick,
+}: {
+  label: string;
+  sublabel?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex min-h-16 w-full flex-col items-start justify-center rounded-xl border-2 border-border bg-card px-5 py-3 text-left transition-colors active:border-primary active:bg-primary/5"
+    >
+      <span className="text-base font-semibold text-foreground">{label}</span>
+      {sublabel && <span className="mt-0.5 text-sm text-muted-foreground">{sublabel}</span>}
+    </button>
+  );
+}
+
+function BackBar({ title, onBack }: { title: string; onBack?: () => void }) {
+  return (
+    <div className="mb-5 flex items-center gap-3">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Back"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card active:bg-muted"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
+      <h1 className="font-heading text-xl font-semibold text-foreground">{title}</h1>
+    </div>
+  );
+}
+
+export function DonationEntryApp() {
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [volunteerName, setVolunteerName] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("gate");
+
+  const [gateName, setGateName] = useState("");
+  const [gateCode, setGateCode] = useState("");
+  const [gateError, setGateError] = useState<string | null>(null);
+  const [gateSubmitting, setGateSubmitting] = useState(false);
+
+  const [donors, setDonors] = useState<Donor[] | null>(null);
+  const [donorFilter, setDonorFilter] = useState("");
+  const [donorsError, setDonorsError] = useState<string | null>(null);
+  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
+
+  const [gender, setGender] = useState<Gender | null>(null);
+  const [ageCategory, setAgeCategory] = useState<AgeCategory | null>(null);
+  const [garmentType, setGarmentType] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [lastAdded, setLastAdded] = useState<{
+    garmentType: string;
+    gender: Gender;
+    ageCategory: AgeCategory | null;
+    quantity: number;
+  } | null>(null);
+
+  async function loadDonors() {
+    setDonorsError(null);
+    try {
+      const res = await fetch("/api/donation-entry/donors");
+      const json = await res.json();
+      if (json.ok) setDonors(json.donors);
+      else setDonorsError("Could not load donors. Pull to refresh.");
+    } catch {
+      setDonorsError("Could not load donors. Check your connection.");
+    }
+  }
+
+  useEffect(() => {
+    fetch("/api/donation-entry/session")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.ok) {
+          setVolunteerName(json.volunteerName);
+          setStep("donor");
+          loadDonors();
+        }
+      })
+      .finally(() => setCheckingSession(false));
+  }, []);
+
+  async function handleGateSubmit(e: FormEvent) {
+    e.preventDefault();
+    setGateError(null);
+    setGateSubmitting(true);
+    try {
+      const res = await fetch("/api/donation-entry/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ volunteerName: gateName, code: gateCode }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setVolunteerName(json.volunteerName);
+        setStep("donor");
+        loadDonors();
+      } else {
+        setGateError(json.error ?? "Something went wrong.");
+      }
+    } catch {
+      setGateError("Could not reach the server. Check your connection.");
+    } finally {
+      setGateSubmitting(false);
+    }
+  }
+
+  const filteredDonors = useMemo(() => {
+    if (!donors) return [];
+    const q = donorFilter.trim().toLowerCase();
+    if (!q) return donors;
+    return donors.filter(
+      (d) => d.donorName.toLowerCase().includes(q) || d.phone.toLowerCase().includes(q),
+    );
+  }, [donors, donorFilter]);
+
+  function resetItemState() {
+    setGender(null);
+    setAgeCategory(null);
+    setGarmentType(null);
+    setQuantity(1);
+    setSubmitError(null);
+  }
+
+  function pickDonor(donor: Donor) {
+    setSelectedDonor(donor);
+    resetItemState();
+    setStep("gender");
+  }
+
+  function pickGender(g: Gender) {
+    setGender(g);
+    setAgeCategory(null);
+    setGarmentType(null);
+    setStep(g === "GENERAL" ? "garment" : "age");
+  }
+
+  function pickAge(a: AgeCategory) {
+    setAgeCategory(a);
+    setGarmentType(null);
+    setStep("garment");
+  }
+
+  function pickGarment(g: string) {
+    setGarmentType(g);
+    setQuantity(1);
+    setStep("quantity");
+  }
+
+  async function submitItem() {
+    if (!selectedDonor || !gender || !garmentType) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/donation-entry/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          donationId: selectedDonor.id,
+          gender,
+          ageCategory,
+          garmentType,
+          quantity,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setLastAdded({ garmentType, gender, ageCategory, quantity });
+        setStep("added");
+      } else {
+        setSubmitError(json.error ?? "Something went wrong.");
+      }
+    } catch {
+      setSubmitError("Could not reach the server. Check your connection.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function addAnotherItem() {
+    resetItemState();
+    setStep("gender");
+  }
+
+  function finishDonor() {
+    resetItemState();
+    setSelectedDonor(null);
+    setDonorFilter("");
+    setStep("donor");
+  }
+
+  function switchVolunteer() {
+    setVolunteerName(null);
+    setSelectedDonor(null);
+    setDonors(null);
+    resetItemState();
+    setGateName("");
+    setGateCode("");
+    setStep("gate");
+  }
+
+  if (checkingSession) {
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-background px-6">
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="mx-auto min-h-dvh max-w-md bg-background px-5 py-8">
+      {step === "gate" && (
+        <>
+          <h1 className="font-heading text-2xl font-semibold text-foreground">Donation Entry</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Serve With What You Have &mdash; for volunteers logging clothes.
+          </p>
+          <form onSubmit={handleGateSubmit} className="mt-8 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="gateName">Your name</Label>
+              <Input
+                id="gateName"
+                value={gateName}
+                onChange={(e) => setGateName(e.target.value)}
+                autoComplete="name"
+                autoFocus
+                required
+                className="h-12 text-base"
+                placeholder="Your name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gateCode">Volunteer code</Label>
+              <Input
+                id="gateCode"
+                value={gateCode}
+                onChange={(e) => setGateCode(e.target.value)}
+                inputMode="numeric"
+                autoComplete="off"
+                required
+                className="h-12 text-center text-lg tracking-[0.3em]"
+              />
+            </div>
+            {gateError && <p className="text-sm text-destructive">{gateError}</p>}
+            <Button type="submit" disabled={gateSubmitting} className="h-12 w-full text-base">
+              {gateSubmitting ? "Checking…" : "Continue"}
+            </Button>
+          </form>
+        </>
+      )}
+
+      {step === "donor" && (
+        <>
+          <div className="mb-5 flex items-center justify-between">
+            <h1 className="font-heading text-xl font-semibold text-foreground">Who donated?</h1>
+            <button type="button" onClick={switchVolunteer} className="text-xs text-muted-foreground underline">
+              Not {volunteerName}?
+            </button>
+          </div>
+          <Input
+            value={donorFilter}
+            onChange={(e) => setDonorFilter(e.target.value)}
+            placeholder="Search by name or number"
+            className="h-12 text-base"
+            autoFocus
+          />
+          <div className="mt-4 space-y-2.5">
+            {donorsError && <p className="text-sm text-destructive">{donorsError}</p>}
+            {donors === null && !donorsError && (
+              <p className="text-sm text-muted-foreground">Loading donors…</p>
+            )}
+            {donors !== null && filteredDonors.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No donors match that search. Ask the admin to log this donor first.
+              </p>
+            )}
+            {filteredDonors.map((donor) => (
+              <OptionCard
+                key={donor.id}
+                label={donor.donorName}
+                sublabel={`${donor.phone} · ${dateFormatter.format(new Date(donor.donatedAt))}`}
+                onClick={() => pickDonor(donor)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {step === "gender" && selectedDonor && (
+        <>
+          <BackBar title={selectedDonor.donorName} onBack={() => setStep("donor")} />
+          <p className="mb-4 text-sm text-muted-foreground">Who is this item for?</p>
+          <div className="space-y-3">
+            {GENDERS.map((g) => (
+              <OptionCard
+                key={g}
+                label={GENDER_LABELS[g]}
+                sublabel={g === "GENERAL" ? "Bedsheets, blankets, towels..." : undefined}
+                onClick={() => pickGender(g)}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {step === "age" && gender && (
+        <>
+          <BackBar title={GENDER_LABELS[gender]} onBack={() => setStep("gender")} />
+          <p className="mb-4 text-sm text-muted-foreground">Age category?</p>
+          <div className="space-y-3">
+            {AGE_CATEGORIES.map((a) => (
+              <OptionCard key={a} label={AGE_CATEGORY_LABELS[a]} onClick={() => pickAge(a)} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {step === "garment" && gender && (
+        <>
+          <BackBar
+            title="What is it?"
+            onBack={() => setStep(gender === "GENERAL" ? "gender" : "age")}
+          />
+          <div className="grid grid-cols-2 gap-2.5">
+            {GARMENTS_BY_GENDER[gender].map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => pickGarment(g)}
+                className="min-h-14 rounded-xl border-2 border-border bg-card px-3 py-2 text-center text-sm font-semibold text-foreground transition-colors active:border-primary active:bg-primary/5"
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {step === "quantity" && garmentType && (
+        <>
+          <BackBar title={garmentType} onBack={() => setStep("garment")} />
+          <p className="text-sm text-muted-foreground">How many?</p>
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              aria-label="Decrease"
+              className="flex size-14 items-center justify-center rounded-full border-2 border-border bg-card text-2xl font-semibold active:bg-muted"
+            >
+              &minus;
+            </button>
+            <Input
+              value={quantity}
+              onChange={(e) => {
+                const n = Number(e.target.value.replace(/\D/g, ""));
+                setQuantity(Number.isFinite(n) && n > 0 ? Math.min(n, 999) : 1);
+              }}
+              inputMode="numeric"
+              className="h-14 w-24 text-center text-2xl font-semibold"
+            />
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.min(999, q + 1))}
+              aria-label="Increase"
+              className="flex size-14 items-center justify-center rounded-full border-2 border-border bg-card text-2xl font-semibold active:bg-muted"
+            >
+              +
+            </button>
+          </div>
+          {submitError && <p className="mt-4 text-sm text-destructive">{submitError}</p>}
+          <Button onClick={submitItem} disabled={submitting} className="mt-6 h-12 w-full text-base">
+            {submitting ? "Adding…" : "Add item"}
+          </Button>
+        </>
+      )}
+
+      {step === "added" && lastAdded && selectedDonor && (
+        <div className="flex flex-col items-center pt-10 text-center">
+          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+              <path d="M4 12.5 9.5 18 20 6.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h2 className="mt-4 font-heading text-lg font-semibold text-foreground">Added</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {lastAdded.quantity} &times; {lastAdded.garmentType}
+            {lastAdded.ageCategory ? ` (${GENDER_LABELS[lastAdded.gender]}, ${AGE_CATEGORY_LABELS[lastAdded.ageCategory]})` : ` (${GENDER_LABELS[lastAdded.gender]})`}
+            <br />
+            for {selectedDonor.donorName}
+          </p>
+          <div className="mt-8 w-full space-y-3">
+            <Button onClick={addAnotherItem} className="h-12 w-full text-base">
+              Add another item for {selectedDonor.donorName}
+            </Button>
+            <Button onClick={finishDonor} variant="outline" className="h-12 w-full text-base">
+              Done, choose another donor
+            </Button>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
