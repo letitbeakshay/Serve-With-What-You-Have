@@ -200,6 +200,21 @@ model PickupInterestResponse {
   @@index([createdAt])
 }
 
+// Manually logged by the admin after collecting clothes from a donor -- there
+// is no public form for this, it's just a record of who gave what and when.
+model ClothDonation {
+  id String @id @default(cuid())
+
+  donorName String
+  phone     String
+  email     String?
+  donatedAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@index([donatedAt])
+}
+
 // A published story on /stories/[slug]. Admin fills in title, tags, banner
 // and pastes bodyHtml directly; everything else is optional and simply
 // doesn't render when left blank.
