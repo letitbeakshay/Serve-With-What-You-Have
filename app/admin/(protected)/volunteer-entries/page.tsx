@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CopyLinkButton } from "../copy-link-button";
 import { deleteVolunteerEntry } from "./actions";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("en-IN", {
@@ -42,6 +43,20 @@ export default async function AdminVolunteerEntriesPage() {
         Every garment logged through the /donation-entry mobile flow, and how much each volunteer
         has entered.
       </p>
+
+      <section className="mt-6">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
+          <div className="min-w-0">
+            <p className="truncate font-medium text-foreground">Volunteer entry link</p>
+            <p className="truncate text-sm text-muted-foreground">/donation-entry</p>
+          </div>
+          <CopyLinkButton path="/donation-entry" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Send this to volunteers. They enter their name and the code, then log garments against a
+          donor -- everything they submit shows up below.
+        </p>
+      </section>
 
       {byVolunteer.length > 0 && (
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

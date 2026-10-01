@@ -13,7 +13,6 @@ const NAV_ITEMS = [
   { href: "/admin/pickup-interests", label: "Pickup Interests" },
   { href: "/admin/donations", label: "Cloth Donations" },
   { href: "/admin/volunteer-entries", label: "Volunteer Entries" },
-  { href: "/donation-entry", label: "Donation Entry" },
   { href: "/admin/stories", label: "Stories" },
 ];
 
