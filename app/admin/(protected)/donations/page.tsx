@@ -184,7 +184,7 @@ export default async function AdminDonationsPage({
                   <TableCell className="text-muted-foreground">
                     {donation.location ?? <span className="italic">—</span>}
                   </TableCell>
-                  <TableCell className="max-w-64 text-muted-foreground">
+                  <TableCell className="max-w-64 min-w-48 whitespace-normal break-words text-muted-foreground">
                     {summarizeGarments(donation.items) || <span className="italic">—</span>}
                   </TableCell>
                   <TableCell className="text-right">
