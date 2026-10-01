@@ -32,6 +32,14 @@ export default async function AdminDonationsPage({
   const { range, from, to, gte, lt } = resolveDateRange(params);
   const donatedAtFilter = gte || lt ? { ...(gte && { gte }), ...(lt && { lt }) } : undefined;
 
+  // The export link carries the same filter currently on screen, so
+  // downloading "Last 30 days" actually downloads last 30 days.
+  const exportQuery = new URLSearchParams({ range });
+  if (range === "custom") {
+    if (from) exportQuery.set("from", from);
+    if (to) exportQuery.set("to", to);
+  }
+
   const [donations, itemsTotal] = await Promise.all([
     prisma.clothDonation.findMany({
       where: donatedAtFilter ? { donatedAt: donatedAtFilter } : undefined,
@@ -53,14 +61,19 @@ export default async function AdminDonationsPage({
         People who have donated clothes, logged by hand after each pickup or drop-off.
       </p>
 
-      <div className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-6">
-        <p className="text-xs text-muted-foreground">
-          Clothes donated{range !== "all" ? " in this period" : ""}
-        </p>
-        <p className="mt-1 font-heading text-3xl font-semibold text-foreground">{totalClothes}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          from {donations.length} {donations.length === 1 ? "donor" : "donors"}
-        </p>
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-4 rounded-xl border border-border bg-card p-4 sm:p-6">
+        <div>
+          <p className="text-xs text-muted-foreground">
+            Clothes donated{range !== "all" ? " in this period" : ""}
+          </p>
+          <p className="mt-1 font-heading text-3xl font-semibold text-foreground">{totalClothes}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            from {donations.length} {donations.length === 1 ? "donor" : "donors"}
+          </p>
+        </div>
+        <Button render={<a href={`/admin/donations/export?${exportQuery}`} />} variant="outline" size="sm">
+          Download Excel
+        </Button>
       </div>
 
       <section className="mt-6">
