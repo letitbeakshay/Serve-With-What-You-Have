@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { WashedField } from "@/components/cloth-donation/washed-field";
 import { updateDonation } from "../../actions";
+import { EditDonationForm } from "./edit-donation-form";
 
 export default async function EditDonationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const donation = await prisma.clothDonation.findUnique({ where: { id } });
+  const donation = await prisma.clothDonation.findUnique({ where: { id }, include: { donor: true } });
   if (!donation) notFound();
 
   const boundUpdate = updateDonation.bind(null, donation.id);
@@ -27,37 +24,19 @@ export default async function EditDonationPage({ params }: { params: Promise<{ i
         Edit donation #{donation.donorNumber}
       </h1>
 
-      <form action={boundUpdate} className="mt-6 space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="donorName">Name</Label>
-            <Input id="donorName" name="donorName" required defaultValue={donation.donorName} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Mobile number</Label>
-            <Input id="phone" name="phone" type="tel" inputMode="tel" required defaultValue={donation.phone} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email (optional)</Label>
-            <Input id="email" name="email" type="email" defaultValue={donation.email ?? ""} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="donatedAt">Date donated</Label>
-            <Input id="donatedAt" name="donatedAt" type="date" required defaultValue={donatedAtValue} />
-          </div>
-          <WashedField idPrefix="edit-" defaultWashed={donation.washed} />
-          <div className="space-y-2">
-            <Label htmlFor="collectionPoint">Collection point (optional)</Label>
-            <Input id="collectionPoint" name="collectionPoint" defaultValue={donation.collectionPoint ?? ""} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="location">Location (optional)</Label>
-            <Input id="location" name="location" defaultValue={donation.location ?? ""} />
-          </div>
-        </div>
-
-        <Button type="submit">Save changes</Button>
-      </form>
+      <EditDonationForm
+        action={boundUpdate}
+        donation={{
+          donorName: donation.donorName,
+          phone: donation.phone,
+          email: donation.email,
+          donatedAtValue,
+          washed: donation.washed,
+          collectionPoint: donation.collectionPoint,
+          location: donation.location,
+          isAnonymous: donation.donor?.isAnonymous ?? false,
+        }}
+      />
     </main>
   );
 }

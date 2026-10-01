@@ -15,3 +15,15 @@ export async function findOrCreateDonor(input: { phone: string; name: string; em
     data: { phone: normalized, name: input.name, email: input.email || null },
   });
 }
+
+// The single shared donor every donation with no known giver attaches to,
+// instead of inventing a placeholder phone number for each one. There is
+// only ever one of these; this creates it on first use and reuses it after.
+export async function getOrCreateAnonymousDonor(): Promise<Donor> {
+  const existing = await prisma.donor.findFirst({ where: { isAnonymous: true } });
+  if (existing) return existing;
+
+  return prisma.donor.create({
+    data: { name: "Anonymous", phone: null, donorNumber: null, isAnonymous: true },
+  });
+}

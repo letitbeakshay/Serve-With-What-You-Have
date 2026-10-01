@@ -210,19 +210,28 @@ model Donor {
 
   // The ID that follows this person across every donation, read out loud or
   // written on a bag -- distinct from a single ClothDonation's own
-  // donorNumber, which identifies that one drop-off, not the person.
-  donorNumber Int @unique @default(autoincrement())
+  // donorNumber, which identifies that one drop-off, not the person. Null
+  // only for the one canonical Anonymous donor, which isn't numbered at all.
+  donorNumber Int? @unique @default(autoincrement())
 
   // Normalized to digits only (see lib/normalize-phone.ts) so "93459 20202"
-  // and "9345920202" match as the same person.
-  phone String @unique
+  // and "9345920202" match as the same person. Null for the Anonymous donor,
+  // who by definition has none on file.
+  phone String? @unique
   name  String
   email String?
+
+  // True for exactly one row: the shared "Anonymous" donor every donation
+  // with no known giver gets attached to, rather than inventing a fake phone
+  // number for each one.
+  isAnonymous Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   clothDonations ClothDonation[]
+
+  @@index([isAnonymous])
 }
 
 model ClothDonation {

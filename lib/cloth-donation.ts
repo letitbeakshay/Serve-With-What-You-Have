@@ -10,6 +10,10 @@ export type DonationInput = {
   washed: boolean | null;
   collectionPoint: string | null;
   location: string | null;
+  // When true, donorName/phone above are just "Anonymous"/"" placeholders --
+  // the caller should link this to the shared Anonymous donor rather than
+  // finding/creating one by phone.
+  isAnonymous: boolean;
 };
 
 export type ParseDonationResult = { error: string } | { data: DonationInput };
@@ -17,16 +21,17 @@ export type ParseDonationResult = { error: string } | { data: DonationInput };
 const WASHED_VALUES = ["washed", "unwashed", "dont_know"] as const;
 
 export function parseDonationFormData(formData: FormData): ParseDonationResult {
-  const donorName = String(formData.get("donorName") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
+  const isAnonymous = formData.get("anonymous") === "on";
+  const donorName = isAnonymous ? "Anonymous" : String(formData.get("donorName") ?? "").trim();
+  const phone = isAnonymous ? "" : String(formData.get("phone") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const donatedAtRaw = String(formData.get("donatedAt") ?? "").trim();
   const washedRaw = String(formData.get("washed") ?? "").trim();
   const collectionPoint = String(formData.get("collectionPoint") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
 
-  if (!donorName) return { error: "Please enter the donor's name." };
-  if (!phone) return { error: "Please enter a mobile number." };
+  if (!isAnonymous && !donorName) return { error: "Please enter the donor's name." };
+  if (!isAnonymous && !phone) return { error: "Please enter a mobile number." };
   if (!donatedAtRaw) return { error: "Please enter the date they donated." };
   if (!(WASHED_VALUES as readonly string[]).includes(washedRaw)) {
     return { error: "Please say whether the clothes are washed, unwashed, or you don't know." };
@@ -42,11 +47,12 @@ export function parseDonationFormData(formData: FormData): ParseDonationResult {
     data: {
       donorName,
       phone,
-      email: email || null,
+      email: isAnonymous ? null : email || null,
       donatedAt,
       washed: washedRaw === "dont_know" ? null : washedRaw === "washed",
       collectionPoint: collectionPoint || null,
       location: location || null,
+      isAnonymous,
     },
   };
 }

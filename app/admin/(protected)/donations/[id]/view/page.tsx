@@ -71,7 +71,10 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
 
       <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-3 sm:p-6">
         <DetailRow label="Name" value={donation.donorName} />
-        <DetailRow label="Mobile number" value={donation.phone} />
+        <DetailRow
+          label="Mobile number"
+          value={donation.phone || <span className="italic text-muted-foreground">—</span>}
+        />
         <DetailRow label="Email" value={donation.email ?? <span className="italic text-muted-foreground">—</span>} />
         <DetailRow label="Donated on" value={dateFormatter.format(donation.donatedAt)} />
         <DetailRow label="Washed" value={washedLabel(donation.washed)} />

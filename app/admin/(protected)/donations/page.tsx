@@ -169,7 +169,9 @@ export default async function AdminDonationsPage({
                 <TableRow key={donation.id}>
                   <TableCell className="text-muted-foreground">#{donation.donorNumber}</TableCell>
                   <TableCell className="font-medium text-foreground">{donation.donorName}</TableCell>
-                  <TableCell className="text-muted-foreground">{donation.phone}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {donation.phone || <span className="italic">—</span>}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {donation.email ?? <span className="italic">—</span>}
                   </TableCell>

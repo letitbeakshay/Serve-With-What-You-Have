@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentAdmin } from "@/lib/admin-session";
 import { parseDonationFormData } from "@/lib/cloth-donation";
-import { findOrCreateDonor } from "@/lib/donor";
+import { findOrCreateDonor, getOrCreateAnonymousDonor } from "@/lib/donor";
 
 export type DonationFormState = { error?: string; success?: string } | null;
 
@@ -22,16 +22,15 @@ export async function createDonation(
   const result = parseDonationFormData(formData);
   if ("error" in result) return { error: result.error };
 
-  const donor = await findOrCreateDonor({
-    phone: result.data.phone,
-    name: result.data.donorName,
-    email: result.data.email,
-  });
-  await prisma.clothDonation.create({ data: { ...result.data, donorId: donor.id } });
+  const { isAnonymous, ...data } = result.data;
+  const donor = isAnonymous
+    ? await getOrCreateAnonymousDonor()
+    : await findOrCreateDonor({ phone: data.phone, name: data.donorName, email: data.email });
+  await prisma.clothDonation.create({ data: { ...data, donorId: donor.id } });
 
   revalidatePath("/admin/donations");
   revalidatePath("/admin/donors");
-  return { success: `Added ${result.data.donorName}.` };
+  return { success: `Added ${data.donorName}.` };
 }
 
 export async function updateDonation(id: string, formData: FormData) {
@@ -45,12 +44,11 @@ export async function updateDonation(id: string, formData: FormData) {
 
   // Re-resolve the donor link in case the phone number was corrected --
   // this donation now belongs to whoever that phone actually matches.
-  const donor = await findOrCreateDonor({
-    phone: result.data.phone,
-    name: result.data.donorName,
-    email: result.data.email,
-  });
-  await prisma.clothDonation.update({ where: { id }, data: { ...result.data, donorId: donor.id } });
+  const { isAnonymous, ...data } = result.data;
+  const donor = isAnonymous
+    ? await getOrCreateAnonymousDonor()
+    : await findOrCreateDonor({ phone: data.phone, name: data.donorName, email: data.email });
+  await prisma.clothDonation.update({ where: { id }, data: { ...data, donorId: donor.id } });
 
   revalidatePath("/admin/donations");
   revalidatePath("/admin/donors");

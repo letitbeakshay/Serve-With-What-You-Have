@@ -54,9 +54,13 @@ export default async function AdminDonorsPage() {
                 const allItems = donor.clothDonations.flatMap((d) => d.items);
                 return (
                   <TableRow key={donor.id}>
-                    <TableCell className="text-muted-foreground">#{donor.donorNumber}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {donor.donorNumber ? `#${donor.donorNumber}` : <span className="italic">—</span>}
+                    </TableCell>
                     <TableCell className="font-medium text-foreground">{donor.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{donor.phone}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {donor.phone ?? <span className="italic">—</span>}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {donor.clothDonations.length}{" "}
                       {donor.clothDonations.length === 1 ? "cloth donation" : "cloth donations"}

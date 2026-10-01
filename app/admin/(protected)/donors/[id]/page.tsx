@@ -47,7 +47,7 @@ export default async function DonorProfilePage({ params }: { params: Promise<{ i
       </Link>
 
       <h1 className="mt-3 font-heading text-xl font-semibold text-foreground sm:text-2xl">
-        Donor #{donor.donorNumber}
+        {donor.donorNumber ? `Donor #${donor.donorNumber}` : donor.name}
       </h1>
 
       <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-border bg-card p-4 sm:grid-cols-3 sm:p-6">
@@ -57,7 +57,9 @@ export default async function DonorProfilePage({ params }: { params: Promise<{ i
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Mobile number</p>
-          <p className="mt-0.5 text-sm font-medium text-foreground">{donor.phone}</p>
+          <p className="mt-0.5 text-sm font-medium text-foreground">
+            {donor.phone ?? <span className="italic text-muted-foreground">—</span>}
+          </p>
         </div>
         <div>
           <p className="text-xs text-muted-foreground">Email</p>
