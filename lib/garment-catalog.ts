@@ -60,6 +60,62 @@ export const GARMENTS_BY_GENDER: Record<Gender, string[]> = {
   GENERAL: ["Bedsheets", "Towels", "Blankets", "School bags", "Footwear (pairs)", "Other"],
 };
 
+// What icon each garment should show in the donation-entry grid. No icon
+// library has one for every item here (there's no "saree" or "dhoti" icon
+// anywhere), so each garment is grouped into a small number of recognizable
+// shapes instead: a top, a bottom, a full one-piece outfit, or one of the
+// General items' own icons.
+export type GarmentIconKey =
+  | "top"
+  | "bottom"
+  | "outfit"
+  | "bed"
+  | "blanket"
+  | "towel"
+  | "bag"
+  | "shoe"
+  | "other";
+
+const GARMENT_ICON_KEYS: Record<string, GarmentIconKey> = {
+  // Tops -- shirts, kurtas, sweaters, anything worn on the upper body
+  "T-shirts": "top",
+  Shirts: "top",
+  Sweaters: "top",
+  Jackets: "top",
+  Kurtas: "top",
+  "Formal wear": "top",
+  Tops: "top",
+  Kurtis: "top",
+  Blouses: "top",
+  Shawls: "top",
+  // Bottoms -- a single lower-body garment
+  Pants: "bottom",
+  Jeans: "bottom",
+  Trousers: "bottom",
+  Shorts: "bottom",
+  "Track pants": "bottom",
+  "Dhoti / Veshti": "bottom",
+  Leggings: "bottom",
+  // Full one-piece outfits / draped garments
+  Skirts: "outfit",
+  Dresses: "outfit",
+  Frocks: "outfit",
+  "Salwar suits": "outfit",
+  Sarees: "outfit",
+  "Churidar sets": "outfit",
+  // General (non-gendered) items
+  Bedsheets: "bed",
+  Blankets: "blanket",
+  Towels: "towel",
+  "School bags": "bag",
+  "Footwear (pairs)": "shoe",
+  Other: "other",
+};
+
+export function getGarmentIconKey(garmentType: string): GarmentIconKey {
+  return GARMENT_ICON_KEYS[garmentType] ?? "other";
+}
+
 export function isGender(value: unknown): value is Gender {
   return typeof value === "string" && (GENDERS as readonly string[]).includes(value);
 }

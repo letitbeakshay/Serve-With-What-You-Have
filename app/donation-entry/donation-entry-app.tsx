@@ -2,7 +2,7 @@
 
 import type { FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Baby, Backpack, Briefcase, Mars, Package, Shirt, Venus } from "lucide-react";
+import { Baby, Backpack, Bed, BedDouble, Briefcase, Footprints, Mars, Package, Shirt, ShoppingBag, TowelRack, Venus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,7 @@ import {
   AGE_CATEGORY_LABELS,
   GARMENTS_BY_GENDER,
   GENDER_LABELS,
+  getGarmentIconKey,
   type AgeCategory,
   type Gender,
 } from "@/lib/garment-catalog";
@@ -89,7 +90,45 @@ const GeneralIcon = () => <Package size={22} strokeWidth={2} />;
 const AdultIcon = () => <Briefcase size={22} strokeWidth={2} />;
 const TeenIcon = () => <Backpack size={22} strokeWidth={2} />;
 const ChildIcon = () => <Baby size={22} strokeWidth={2} />;
-const GarmentIcon = () => <Shirt size={18} strokeWidth={2} />;
+// lucide has no icon for trousers or a one-piece outfit (there's no "pants"
+// or "saree" icon anywhere), so these two are hand-drawn to match lucide's
+// own stroke style (24x24 viewBox, rounded joins, strokeWidth 2).
+const PantsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path
+      d="M6 3h12l.6 6-1.1 12h-3l-.9-10-.9 10h-3l-.9-10-.9 10h-3L5.4 9Z"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path d="M6 8h12" strokeLinecap="round" />
+  </svg>
+);
+const OutfitIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path
+      d="M9 3h6l.8 3.5-1.8 1.5 3 13H7l3-13-1.8-1.5Z"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const GARMENT_ICON_COMPONENTS = {
+  top: Shirt,
+  bottom: PantsIcon,
+  outfit: OutfitIcon,
+  bed: Bed,
+  blanket: BedDouble,
+  towel: TowelRack,
+  bag: ShoppingBag,
+  shoe: Footprints,
+  other: Package,
+};
+
+function GarmentIcon({ garmentType }: { garmentType: string }) {
+  const Icon = GARMENT_ICON_COMPONENTS[getGarmentIconKey(garmentType)];
+  return <Icon size={18} strokeWidth={2} />;
+}
 
 function BackBar({ title, onBack }: { title: string; onBack?: () => void }) {
   return (
@@ -433,7 +472,7 @@ export function DonationEntryApp() {
                 className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-border bg-card px-2 py-3 text-center transition-colors active:border-primary active:bg-primary/5"
               >
                 <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <GarmentIcon />
+                  <GarmentIcon garmentType={g} />
                 </span>
                 <span className="text-sm font-semibold text-foreground">{g}</span>
               </button>
