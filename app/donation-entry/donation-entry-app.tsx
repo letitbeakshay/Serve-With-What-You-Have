@@ -2,7 +2,7 @@
 
 import type { CSSProperties, FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Baby, Backpack, Bed, BedDouble, Briefcase, Footprints, Mars, Package, Shirt, ShoppingBag, TowelRack, Venus } from "lucide-react";
+import { Baby, Backpack, Bed, BedDouble, Briefcase, Footprints, HatGlasses, Mars, Package, Shirt, ShoppingBag, TowelRack, Venus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -153,6 +153,7 @@ const GARMENT_ICON_COMPONENTS = {
   towel: TowelRack,
   bag: ShoppingBag,
   shoe: Footprints,
+  accessory: HatGlasses,
   other: Package,
 };
 

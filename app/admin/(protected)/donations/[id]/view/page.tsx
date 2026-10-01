@@ -51,6 +51,14 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
 
   const totalQuantity = donation.items.reduce((sum, item) => sum + item.quantity, 0);
 
+  // One total per garment type regardless of who logged it or which gender/age
+  // it was for -- "4 Shirts, 4 Pants" rather than a row per log entry.
+  const byGarment = new Map<string, number>();
+  for (const item of donation.items) {
+    byGarment.set(item.garmentType, (byGarment.get(item.garmentType) ?? 0) + item.quantity);
+  }
+  const garmentOverview = [...byGarment.entries()].sort((a, b) => b[1] - a[1]);
+
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
       <Link href="/admin/donations" className="text-sm text-muted-foreground hover:text-foreground">
@@ -81,6 +89,22 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
           value={donation.location ?? <span className="italic text-muted-foreground">—</span>}
         />
       </div>
+
+      {garmentOverview.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-heading text-lg font-semibold text-foreground">Overview</h2>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {garmentOverview.map(([garmentType, quantity]) => (
+              <span
+                key={garmentType}
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground"
+              >
+                {quantity} &times; {garmentType}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 flex items-center justify-between">
         <h2 className="font-heading text-lg font-semibold text-foreground">Clothes donated</h2>

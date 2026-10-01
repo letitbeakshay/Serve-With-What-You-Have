@@ -34,6 +34,7 @@ export const GARMENTS_BY_GENDER: Record<Gender, string[]> = {
     "Kurtas",
     "Dhoti / Veshti",
     "Formal wear",
+    "Accessories",
   ],
   FEMALE: [
     "T-shirts",
@@ -53,9 +54,10 @@ export const GARMENTS_BY_GENDER: Record<Gender, string[]> = {
     "Sweaters",
     "Jackets",
     "Shawls",
+    "Accessories",
   ],
   // No gender/age split for these -- bedsheets, blankets etc.
-  GENERAL: ["Bedsheets", "Towels", "Blankets", "School bags", "Footwear (pairs)", "Other"],
+  GENERAL: ["Bedsheets", "Towels", "Blankets", "School bags", "Footwear (pairs)", "Accessories", "Other"],
 };
 
 // What icon each garment should show in the donation-entry grid. No icon
@@ -72,6 +74,7 @@ export type GarmentIconKey =
   | "towel"
   | "bag"
   | "shoe"
+  | "accessory"
   | "other";
 
 const GARMENT_ICON_KEYS: Record<string, GarmentIconKey> = {
@@ -106,6 +109,7 @@ const GARMENT_ICON_KEYS: Record<string, GarmentIconKey> = {
   Towels: "towel",
   "School bags": "bag",
   "Footwear (pairs)": "shoe",
+  Accessories: "accessory",
   Other: "other",
 };
 
