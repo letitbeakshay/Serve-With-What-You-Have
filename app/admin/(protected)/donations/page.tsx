@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CopyLinkButton } from "../copy-link-button";
 import { AddDonationForm } from "./add-donation-form";
 import { deleteDonation } from "./actions";
 
@@ -29,6 +30,20 @@ export default async function AdminDonationsPage() {
       <p className="mt-2 text-sm text-muted-foreground">
         People who have donated clothes, logged by hand after each pickup or drop-off.
       </p>
+
+      <section className="mt-6">
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3">
+          <div className="min-w-0">
+            <p className="truncate font-medium text-foreground">Add a donor link</p>
+            <p className="truncate text-sm text-muted-foreground">/add-donor</p>
+          </div>
+          <CopyLinkButton path="/add-donor" />
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Open this on your phone when someone donates, or share it, to log a donation without
+          going into the admin panel.
+        </p>
+      </section>
 
       <div className="mt-6">
         <AddDonationForm />
@@ -55,6 +70,9 @@ export default async function AdminDonationsPage() {
                 <TableHead>Mobile number</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Donated on</TableHead>
+                <TableHead>Washed</TableHead>
+                <TableHead>Collection point</TableHead>
+                <TableHead>Location</TableHead>
                 <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
@@ -69,6 +87,15 @@ export default async function AdminDonationsPage() {
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(donation.donatedAt)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {donation.washed ? "Washed" : "Unwashed"}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {donation.collectionPoint ?? <span className="italic">—</span>}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {donation.location ?? <span className="italic">—</span>}
                   </TableCell>
                   <TableCell className="text-right">
                     <form action={deleteDonation}>

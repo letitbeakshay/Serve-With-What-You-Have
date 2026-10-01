@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCurrentAdmin } from "@/lib/admin-session";
+import { parseDonationFormData } from "@/lib/cloth-donation";
 
 export type DonationFormState = { error?: string; success?: string } | null;
 
@@ -16,27 +17,13 @@ export async function createDonation(
 ): Promise<DonationFormState> {
   if (!(await requireAdmin())) return { error: "You must be logged in." };
 
-  const donorName = String(formData.get("donorName") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const donatedAtRaw = String(formData.get("donatedAt") ?? "").trim();
+  const result = parseDonationFormData(formData);
+  if ("error" in result) return { error: result.error };
 
-  if (!donorName) return { error: "Please enter the donor's name." };
-  if (!phone) return { error: "Please enter a mobile number." };
-  if (!donatedAtRaw) return { error: "Please enter the date they donated." };
-
-  // Stored at midday UTC rather than midnight so the calendar date this
-  // represents never shifts by a day when displayed from a different
-  // timezone than the one it was entered in.
-  const donatedAt = new Date(`${donatedAtRaw}T12:00:00.000Z`);
-  if (Number.isNaN(donatedAt.getTime())) return { error: "That date doesn't look right." };
-
-  await prisma.clothDonation.create({
-    data: { donorName, phone, email: email || null, donatedAt },
-  });
+  await prisma.clothDonation.create({ data: result.data });
 
   revalidatePath("/admin/donations");
-  return { success: `Added ${donorName}.` };
+  return { success: `Added ${result.data.donorName}.` };
 }
 
 export async function deleteDonation(formData: FormData) {

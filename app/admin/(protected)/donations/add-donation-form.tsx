@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { WashedField } from "@/components/cloth-donation/washed-field";
 import { createDonation, type DonationFormState } from "./actions";
 
 const initialState: DonationFormState = null;
@@ -42,6 +43,15 @@ export function AddDonationForm() {
         <div className="space-y-2">
           <Label htmlFor="donatedAt">Date donated</Label>
           <Input id="donatedAt" name="donatedAt" type="date" required defaultValue={todayISODate()} />
+        </div>
+        <WashedField idPrefix="admin-" />
+        <div className="space-y-2">
+          <Label htmlFor="collectionPoint">Collection point (optional)</Label>
+          <Input id="collectionPoint" name="collectionPoint" placeholder="Coimbatore drop-off" />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="location">Location (optional)</Label>
+          <Input id="location" name="location" placeholder="RS Puram, Coimbatore" />
         </div>
       </div>
       {state?.error && <p className="mt-3 text-sm text-destructive">{state.error}</p>}

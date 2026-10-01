@@ -214,6 +214,14 @@ model ClothDonation {
   email     String?
   donatedAt DateTime
 
+  // Whether the clothes arrived already washed. Defaults to false for
+  // existing rows logged before this field existed -- the admin can correct
+  // any of those by hand.
+  washed Boolean @default(false)
+
+  collectionPoint String?
+  location        String?
+
   createdAt DateTime @default(now())
 
   items DonationItem[]
