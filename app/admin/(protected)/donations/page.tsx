@@ -74,7 +74,7 @@ export default async function AdminDonationsPage() {
                 <TableHead>Washed</TableHead>
                 <TableHead>Collection point</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead className="w-36" />
+                <TableHead className="w-48" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -100,6 +100,9 @@ export default async function AdminDonationsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button render={<Link href={`/admin/donations/${donation.id}/view`} />} variant="outline" size="sm">
+                        View
+                      </Button>
                       <Button render={<Link href={`/admin/donations/${donation.id}/edit`} />} variant="outline" size="sm">
                         Edit
                       </Button>
