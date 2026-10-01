@@ -36,6 +36,7 @@ export async function POST(request: Request) {
     data: {
       donationId,
       volunteerName: session.volunteerName,
+      volunteerId: session.volunteerId,
       ...result.data,
     },
   });

@@ -188,6 +188,7 @@ export function DonationEntryApp() {
   const [step, setStep] = useState<Step>("gate");
 
   const [gateName, setGateName] = useState("");
+  const [gatePhone, setGatePhone] = useState("");
   const [gateCode, setGateCode] = useState("");
   const [gateError, setGateError] = useState<string | null>(null);
   const [gateSubmitting, setGateSubmitting] = useState(false);
@@ -250,7 +251,7 @@ export function DonationEntryApp() {
       const res = await fetch("/api/donation-entry/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ volunteerName: gateName, code: gateCode }),
+        body: JSON.stringify({ volunteerName: gateName, phone: gatePhone, code: gateCode }),
       });
       const json = await res.json();
       if (json.ok) {
@@ -426,6 +427,7 @@ export function DonationEntryApp() {
     setDonors(null);
     resetItemState();
     setGateName("");
+    setGatePhone("");
     setGateCode("");
     setStep("gate");
   }
@@ -458,6 +460,20 @@ export function DonationEntryApp() {
                 required
                 className="h-12 text-base"
                 placeholder="Your name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="gatePhone">Your mobile number</Label>
+              <Input
+                id="gatePhone"
+                value={gatePhone}
+                onChange={(e) => setGatePhone(e.target.value)}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+                className="h-12 text-base"
+                placeholder="98765 43210"
               />
             </div>
             <div className="space-y-2">

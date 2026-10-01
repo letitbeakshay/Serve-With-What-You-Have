@@ -14,11 +14,10 @@ function StatCard({ label, value, href }: { label: string; value: number; href: 
 }
 
 export default async function AdminDashboardPage() {
-  const [donorCount, donationCount, itemsTotal, volunteerEntryCount, orgResponseCount] = await Promise.all([
+  const [donorCount, itemsTotal, volunteerCount, orgResponseCount] = await Promise.all([
     prisma.donor.count(),
-    prisma.clothDonation.count(),
     prisma.donationItem.aggregate({ _sum: { quantity: true } }),
-    prisma.donationItem.count(),
+    prisma.volunteer.count(),
     prisma.simpleResponse.count(),
   ]);
 
@@ -30,8 +29,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <StatCard label="Donors" value={donorCount} href="/admin/donors" />
         <StatCard label="Clothes donated" value={itemsTotal._sum.quantity ?? 0} href="/admin/donations" />
-        <StatCard label="Donations logged" value={donationCount} href="/admin/donations" />
-        <StatCard label="Volunteer entries" value={volunteerEntryCount} href="/admin/volunteer-entries" />
+        <StatCard label="Volunteers" value={volunteerCount} href="/admin/volunteers" />
         <StatCard label="Organisations onboarded" value={orgResponseCount} href="/admin" />
       </div>
     </main>

@@ -283,22 +283,50 @@ enum DonationAgeCategory {
 // One garment line-item within a donation, logged by a volunteer through the
 // /donation-entry mobile flow: pick the donor, then gender, then (unless
 // GENERAL) age category, then garment type and how many.
+// A volunteer, identified by phone number (same pattern as Donor) so the
+// same person logging items on different days or devices is still one
+// person, with one ID -- not just a free-text name with no identity behind
+// it.
+model Volunteer {
+  id String @id @default(cuid())
+
+  // The ID that follows this person across every entry they log.
+  volunteerNumber Int @unique @default(autoincrement())
+
+  // Normalized to digits only (see lib/normalize-phone.ts).
+  phone String @unique
+  name  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items DonationItem[]
+}
+
 model DonationItem {
   id String @id @default(cuid())
 
   donation   ClothDonation @relation(fields: [donationId], references: [id], onDelete: Cascade)
   donationId String
 
+  // The free-text name typed at the gate -- kept as-is for history even
+  // where volunteerId below can't be resolved (entries logged before phone
+  // numbers were captured).
   volunteerName String
-  gender        DonationGender
-  ageCategory   DonationAgeCategory?
-  garmentType   String
-  quantity      Int
+
+  volunteer   Volunteer? @relation(fields: [volunteerId], references: [id])
+  volunteerId String?
+
+  gender      DonationGender
+  ageCategory DonationAgeCategory?
+  garmentType String
+  quantity    Int
 
   createdAt DateTime @default(now())
 
   @@index([donationId])
   @@index([createdAt])
+  @@index([volunteerId])
 }
 
 // A published story on /stories/[slug]. Admin fills in title, tags, banner
