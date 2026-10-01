@@ -13,6 +13,9 @@ const NAV_ITEMS = [
   { href: "/admin/pickup-interests", label: "Pickup Interests" },
   { href: "/admin/donations", label: "Cloth Donations" },
   { href: "/admin/volunteer-entries", label: "Volunteer Entries" },
+  // Opens in a new tab -- this is the volunteer-facing tool itself (code +
+  // name gate, no admin login), not an admin data page like the rest.
+  { href: "/donation-entry", label: "Donation Entry", external: true },
   { href: "/admin/stories", label: "Stories" },
 ];
 
@@ -38,21 +41,26 @@ function NavLinks({
   const items = [...NAV_ITEMS, ...(isOwner ? OWNER_ITEMS : USER_ITEMS)];
   return (
     <>
-      {items.map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          onClick={onNavigate}
-          className={cn(
-            "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
-            isActive(pathname, item.href)
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
+      {items.map((item) => {
+        const className = cn(
+          "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+          !("external" in item) && isActive(pathname, item.href)
+            ? "bg-primary/10 text-primary"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        );
+        if ("external" in item && item.external) {
+          return (
+            <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className={className}>
+              {item.label} <span aria-hidden="true">&#8599;</span>
+            </a>
+          );
+        }
+        return (
+          <Link key={item.href} href={item.href} onClick={onNavigate} className={className}>
+            {item.label}
+          </Link>
+        );
+      })}
     </>
   );
 }

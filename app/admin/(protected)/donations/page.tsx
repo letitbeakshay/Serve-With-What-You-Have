@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import {
@@ -73,7 +74,7 @@ export default async function AdminDonationsPage() {
                 <TableHead>Washed</TableHead>
                 <TableHead>Collection point</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead className="w-20" />
+                <TableHead className="w-36" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -98,12 +99,17 @@ export default async function AdminDonationsPage() {
                     {donation.location ?? <span className="italic">—</span>}
                   </TableCell>
                   <TableCell className="text-right">
-                    <form action={deleteDonation}>
-                      <input type="hidden" name="id" value={donation.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
+                    <div className="flex justify-end gap-2">
+                      <Button render={<Link href={`/admin/donations/${donation.id}/edit`} />} variant="outline" size="sm">
+                        Edit
                       </Button>
-                    </form>
+                      <form action={deleteDonation}>
+                        <input type="hidden" name="id" value={donation.id} />
+                        <Button type="submit" variant="outline" size="sm">
+                          Remove
+                        </Button>
+                      </form>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
