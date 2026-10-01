@@ -1,6 +1,6 @@
 "use client";
 
-import type { FormEvent, ReactNode } from "react";
+import type { CSSProperties, FormEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Baby, Backpack, Bed, BedDouble, Briefcase, Footprints, Mars, Package, Shirt, ShoppingBag, TowelRack, Venus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,27 @@ const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   month: "short",
   year: "numeric",
   timeZone: "UTC",
+});
+
+// Six dots flung outward from the success checkmark (see .success-confetti
+// in globals.css), evenly spaced around a circle.
+const CONFETTI_COLORS = [
+  "var(--primary)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--primary)",
+];
+const CONFETTI_DOTS = CONFETTI_COLORS.map((color, i) => {
+  const angle = (i / CONFETTI_COLORS.length) * Math.PI * 2;
+  const radius = 34;
+  return {
+    color,
+    tx: `${Math.round(Math.cos(angle) * radius)}px`,
+    ty: `${Math.round(Math.sin(angle) * radius)}px`,
+    delay: i * 0.03,
+  };
 });
 
 // A big, single-tap row. Used for the donor search list, where each option
@@ -521,12 +542,29 @@ export function DonationEntryApp() {
 
       {step === "added" && lastAdded && selectedDonor && (
         <div className="flex flex-col items-center pt-10 text-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-              <path d="M4 12.5 9.5 18 20 6.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="relative flex size-16 items-center justify-center">
+            <span className="success-pop-ring absolute inset-0 rounded-full bg-primary/30" />
+            {CONFETTI_DOTS.map((dot, i) => (
+              <span
+                key={i}
+                className="success-confetti absolute size-1.5 rounded-full"
+                style={
+                  {
+                    background: dot.color,
+                    animationDelay: `${dot.delay}s`,
+                    "--tx": dot.tx,
+                    "--ty": dot.ty,
+                  } as CSSProperties
+                }
+              />
+            ))}
+            <div className="success-pop-check relative flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                <path d="M4 12.5 9.5 18 20 6.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
           </div>
-          <h2 className="mt-4 font-heading text-lg font-semibold text-foreground">Added</h2>
+          <h2 className="mt-4 font-heading text-lg font-semibold text-foreground">Nice one!</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {lastAdded.quantity} &times; {lastAdded.garmentType}
             {lastAdded.ageCategory ? ` (${GENDER_LABELS[lastAdded.gender]}, ${AGE_CATEGORY_LABELS[lastAdded.ageCategory]})` : ` (${GENDER_LABELS[lastAdded.gender]})`}
@@ -534,7 +572,7 @@ export function DonationEntryApp() {
             for #{selectedDonor.donorNumber} · {selectedDonor.donorName}
           </p>
           <div className="mt-8 w-full space-y-3">
-            <Button onClick={addAnotherItem} className="h-12 w-full text-base">
+            <Button onClick={addAnotherItem} className="success-nudge h-12 w-full text-base">
               Add another item for #{selectedDonor.donorNumber}
             </Button>
             <Button onClick={finishDonor} variant="outline" className="h-12 w-full text-base">
