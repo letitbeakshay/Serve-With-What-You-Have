@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { readVolunteerSessionToken, VOLUNTEER_SESSION_COOKIE } from "@/lib/volunteer-session";
+import { maskPhoneLast4 } from "@/lib/mask-phone";
 
 // Full list rather than a search endpoint: donor counts here are small
 // enough that filtering client-side as the volunteer types is simpler and
@@ -16,5 +17,9 @@ export async function GET() {
     select: { id: true, donorNumber: true, donorName: true, phone: true, donatedAt: true },
   });
 
-  return NextResponse.json({ ok: true, donors });
+  // The real number never leaves the server -- masked here, not just hidden
+  // in the UI, so it's not sitting in the browser's network tab either.
+  const masked = donors.map((donor) => ({ ...donor, phone: maskPhoneLast4(donor.phone) }));
+
+  return NextResponse.json({ ok: true, donors: masked });
 }
