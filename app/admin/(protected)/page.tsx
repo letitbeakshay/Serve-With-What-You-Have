@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
 import { prisma } from "@/lib/db";
 import { getOnboardingForm } from "@/lib/onboarding-form";
 import { CopyLinkButton } from "./copy-link-button";
+import { deleteOnboardingResponse } from "./actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -63,6 +65,7 @@ export default async function AdminHomePage() {
                 <TableHead>Location</TableHead>
                 <TableHead>How they heard of us</TableHead>
                 <TableHead>Received</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,6 +82,14 @@ export default async function AdminHomePage() {
                   <TableCell className="max-w-64 text-muted-foreground">{response.referralSource}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <form action={deleteOnboardingResponse}>
+                      <input type="hidden" name="id" value={response.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Remove
+                      </Button>
+                    </form>
                   </TableCell>
                 </TableRow>
               ))}

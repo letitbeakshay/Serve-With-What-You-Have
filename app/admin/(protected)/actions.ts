@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { getCurrentAdmin } from "@/lib/admin-session";
 
 function slugify(input: string): string {
   const base = input
@@ -31,5 +32,15 @@ export async function createForm(formData: FormData) {
     data: { name, slug, status: "OPEN" },
   });
 
+  revalidatePath("/admin");
+}
+
+export async function deleteOnboardingResponse(formData: FormData) {
+  if (!(await getCurrentAdmin())) return;
+
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+
+  await prisma.simpleResponse.deleteMany({ where: { id } });
   revalidatePath("/admin");
 }
