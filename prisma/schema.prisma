@@ -202,12 +202,42 @@ model PickupInterestResponse {
 
 // Manually logged by the admin after collecting clothes from a donor -- there
 // is no public form for this, it's just a record of who gave what and when.
+// The person, identified by phone number, across every kind of serving --
+// not just clothes. One Donor can have many ClothDonation rows (and, later,
+// other serving types) if they give more than once.
+model Donor {
+  id String @id @default(cuid())
+
+  // The ID that follows this person across every donation, read out loud or
+  // written on a bag -- distinct from a single ClothDonation's own
+  // donorNumber, which identifies that one drop-off, not the person.
+  donorNumber Int @unique @default(autoincrement())
+
+  // Normalized to digits only (see lib/normalize-phone.ts) so "93459 20202"
+  // and "9345920202" match as the same person.
+  phone String @unique
+  name  String
+  email String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clothDonations ClothDonation[]
+}
+
 model ClothDonation {
   id String @id @default(cuid())
 
   // A short, human-friendly number (#1, #2, ...) volunteers and the admin
   // can read out loud or write on a bag -- the cuid id is not meant for that.
+  // Identifies this donation event, not the person (see Donor.donorNumber
+  // for that) -- the same donor can have several of these.
   donorNumber Int @unique @default(autoincrement())
+
+  // The canonical person this donation belongs to, matched by phone number.
+  // Nullable only because it's backfilled onto rows that predate this field.
+  donor   Donor?  @relation(fields: [donorId], references: [id])
+  donorId String?
 
   donorName String
   phone     String
@@ -226,6 +256,7 @@ model ClothDonation {
   items DonationItem[]
 
   @@index([donatedAt])
+  @@index([donorId])
 }
 
 enum DonationGender {

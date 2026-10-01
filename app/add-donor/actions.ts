@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { parseDonationFormData } from "@/lib/cloth-donation";
+import { findOrCreateDonor } from "@/lib/donor";
 
 export type AddDonorState = { error?: string; success?: string } | null;
 
@@ -17,8 +18,14 @@ export async function createPublicDonation(
   const result = parseDonationFormData(formData);
   if ("error" in result) return { error: result.error };
 
-  await prisma.clothDonation.create({ data: result.data });
+  const donor = await findOrCreateDonor({
+    phone: result.data.phone,
+    name: result.data.donorName,
+    email: result.data.email,
+  });
+  await prisma.clothDonation.create({ data: { ...result.data, donorId: donor.id } });
 
   revalidatePath("/admin/donations");
+  revalidatePath("/admin/donors");
   return { success: `Added ${result.data.donorName}. You can log another one below.` };
 }

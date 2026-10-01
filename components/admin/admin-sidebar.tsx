@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/admin/referrals", label: "Referrals" },
   { href: "/admin/other-interests", label: "Other Interests" },
   { href: "/admin/pickup-interests", label: "Pickup Interests" },
+  { href: "/admin/donors", label: "Donors" },
   { href: "/admin/donations", label: "Cloth Donations" },
   { href: "/admin/volunteer-entries", label: "Volunteer Entries" },
   { href: "/admin/stories", label: "Stories" },
