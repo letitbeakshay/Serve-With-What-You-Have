@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getReferralForm } from "@/lib/referral-form";
 import { CopyLinkButton } from "../copy-link-button";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteReferral } from "./actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -61,6 +63,7 @@ export default async function AdminReferralsPage() {
                 <TableHead>Location</TableHead>
                 <TableHead>Referred by</TableHead>
                 <TableHead>Received</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -74,6 +77,14 @@ export default async function AdminReferralsPage() {
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <form action={deleteReferral}>
+                      <input type="hidden" name="id" value={response.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Remove
+                      </Button>
+                    </form>
                   </TableCell>
                 </TableRow>
               ))}

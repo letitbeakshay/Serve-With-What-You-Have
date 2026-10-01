@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deletePickupInterest } from "./actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -45,6 +47,7 @@ export default async function AdminPickupInterestsPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Received</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -54,6 +57,14 @@ export default async function AdminPickupInterestsPage() {
                   <TableCell className="text-muted-foreground">{response.phone}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <form action={deletePickupInterest}>
+                      <input type="hidden" name="id" value={response.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Remove
+                      </Button>
+                    </form>
                   </TableCell>
                 </TableRow>
               ))}

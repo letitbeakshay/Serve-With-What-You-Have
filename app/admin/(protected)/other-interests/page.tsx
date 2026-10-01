@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { INTEREST_CATEGORY_LABELS, isInterestCategory } from "@/lib/field-config/interest";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteInterest } from "./actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -48,6 +50,7 @@ export default async function AdminOtherInterestsPage() {
                 <TableHead>Interested in</TableHead>
                 <TableHead>Message</TableHead>
                 <TableHead>Received</TableHead>
+                <TableHead className="w-20" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,6 +69,14 @@ export default async function AdminOtherInterestsPage() {
                   <TableCell className="max-w-64 text-muted-foreground">{response.message}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {dateFormatter.format(response.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <form action={deleteInterest}>
+                      <input type="hidden" name="id" value={response.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        Remove
+                      </Button>
+                    </form>
                   </TableCell>
                 </TableRow>
               ))}
