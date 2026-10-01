@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { RANGE_OPTIONS, resolveDateRange } from "@/lib/date-range";
 import { summarizeGarments } from "@/lib/garment-breakdown";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import { CopyLinkButton } from "../copy-link-button";
 import { AddDonationForm } from "./add-donation-form";
 import { deleteDonation } from "./actions";
@@ -195,12 +196,11 @@ export default async function AdminDonationsPage({
                       <Button render={<Link href={`/admin/donations/${donation.id}/edit`} />} variant="outline" size="sm">
                         Edit
                       </Button>
-                      <form action={deleteDonation}>
-                        <input type="hidden" name="id" value={donation.id} />
-                        <Button type="submit" variant="outline" size="sm">
-                          Remove
-                        </Button>
-                      </form>
+                      <ConfirmRemoveButton
+                        action={deleteDonation}
+                        id={donation.id}
+                        confirmMessage={`Remove donor #${donation.donorNumber} (${donation.donorName})? This can't be undone.`}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

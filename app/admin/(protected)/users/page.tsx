@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCurrentAdmin } from "@/lib/admin-session";
-import { Button } from "@/components/ui/button";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import {
   Table,
   TableBody,
@@ -68,12 +68,11 @@ export default async function AdminUsersPage() {
                   </TableCell>
                   <TableCell className="text-muted-foreground">{dateFormatter.format(user.createdAt)}</TableCell>
                   <TableCell className="text-right">
-                    <form action={deleteUser}>
-                      <input type="hidden" name="id" value={user.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    <ConfirmRemoveButton
+                      action={deleteUser}
+                      id={user.id}
+                      confirmMessage={`Remove ${user.email}'s access? This can't be undone.`}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

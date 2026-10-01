@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import {
   Table,
   TableBody,
@@ -84,12 +84,11 @@ export default async function AdminHomePage() {
                     {dateFormatter.format(response.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <form action={deleteOnboardingResponse}>
-                      <input type="hidden" name="id" value={response.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    <ConfirmRemoveButton
+                      action={deleteOnboardingResponse}
+                      id={response.id}
+                      confirmMessage={`Remove ${response.orgName}'s response? This can't be undone.`}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

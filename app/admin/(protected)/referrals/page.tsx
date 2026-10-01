@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getReferralForm } from "@/lib/referral-form";
 import { CopyLinkButton } from "../copy-link-button";
-import { Button } from "@/components/ui/button";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import {
   Table,
   TableBody,
@@ -79,12 +79,11 @@ export default async function AdminReferralsPage() {
                     {dateFormatter.format(response.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <form action={deleteReferral}>
-                      <input type="hidden" name="id" value={response.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    <ConfirmRemoveButton
+                      action={deleteReferral}
+                      id={response.id}
+                      confirmMessage={`Remove the referral for ${response.orgName}? This can't be undone.`}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

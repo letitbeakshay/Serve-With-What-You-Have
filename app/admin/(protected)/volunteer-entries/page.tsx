@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { AGE_CATEGORY_LABELS, GENDER_LABELS, type AgeCategory, type Gender } from "@/lib/garment-catalog";
-import { Button } from "@/components/ui/button";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import {
   Table,
   TableBody,
@@ -114,12 +114,11 @@ export default async function AdminVolunteerEntriesPage() {
                   <TableCell className="text-muted-foreground">{item.garmentType}</TableCell>
                   <TableCell className="text-right text-muted-foreground">{item.quantity}</TableCell>
                   <TableCell className="text-right">
-                    <form action={deleteVolunteerEntry}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    <ConfirmRemoveButton
+                      action={deleteVolunteerEntry}
+                      id={item.id}
+                      confirmMessage={`Remove this entry (${item.quantity} x ${item.garmentType} for #${item.donation.donorNumber})? This can't be undone.`}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

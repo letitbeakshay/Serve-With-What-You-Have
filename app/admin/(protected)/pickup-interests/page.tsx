@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import { Button } from "@/components/ui/button";
+import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import {
   Table,
   TableBody,
@@ -59,12 +59,11 @@ export default async function AdminPickupInterestsPage() {
                     {dateFormatter.format(response.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <form action={deletePickupInterest}>
-                      <input type="hidden" name="id" value={response.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        Remove
-                      </Button>
-                    </form>
+                    <ConfirmRemoveButton
+                      action={deletePickupInterest}
+                      id={response.id}
+                      confirmMessage={`Remove ${response.name}'s response? This can't be undone.`}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
