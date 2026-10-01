@@ -90,7 +90,7 @@ export default async function AdminDonationsPage() {
                     {dateFormatter.format(donation.donatedAt)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {donation.washed ? "Washed" : "Unwashed"}
+                    {donation.washed === null ? "Don't know" : donation.washed ? "Washed" : "Unwashed"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {donation.collectionPoint ?? <span className="italic">—</span>}

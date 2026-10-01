@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ClothDonation" ALTER COLUMN "washed" DROP NOT NULL,
+ALTER COLUMN "washed" DROP DEFAULT;

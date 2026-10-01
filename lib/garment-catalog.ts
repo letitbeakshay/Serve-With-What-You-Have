@@ -27,7 +27,6 @@ export const GARMENTS_BY_GENDER: Record<Gender, string[]> = {
     "Shirts",
     "Pants",
     "Jeans",
-    "Trousers",
     "Shorts",
     "Track pants",
     "Sweaters",
@@ -42,7 +41,6 @@ export const GARMENTS_BY_GENDER: Record<Gender, string[]> = {
     "Shirts",
     "Pants",
     "Jeans",
-    "Trousers",
     "Leggings",
     "Skirts",
     "Dresses",
@@ -91,7 +89,6 @@ const GARMENT_ICON_KEYS: Record<string, GarmentIconKey> = {
   // Bottoms -- a single lower-body garment
   Pants: "bottom",
   Jeans: "bottom",
-  Trousers: "bottom",
   Shorts: "bottom",
   "Track pants": "bottom",
   "Dhoti / Veshti": "bottom",

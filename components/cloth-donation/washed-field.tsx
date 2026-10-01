@@ -8,13 +8,13 @@ export function WashedField({
   defaultWashed,
 }: {
   idPrefix?: string;
-  /** Omit for a blank new-entry form; pass true/false to pre-select when editing. */
-  defaultWashed?: boolean;
+  /** Omit for a blank new-entry form. Pass true/false/null (don't know) when editing. */
+  defaultWashed?: boolean | null;
 }) {
   return (
     <div className="space-y-2">
       <Label>Washed or unwashed</Label>
-      <div className="flex gap-4 pt-1">
+      <div className="flex flex-wrap gap-4 pt-1">
         <label htmlFor={`${idPrefix}washed-yes`} className="flex items-center gap-2 text-sm text-foreground">
           <input
             id={`${idPrefix}washed-yes`}
@@ -36,6 +36,17 @@ export function WashedField({
             defaultChecked={defaultWashed === false}
           />
           Unwashed
+        </label>
+        <label htmlFor={`${idPrefix}washed-dont-know`} className="flex items-center gap-2 text-sm text-foreground">
+          <input
+            id={`${idPrefix}washed-dont-know`}
+            type="radio"
+            name="washed"
+            value="dont_know"
+            required
+            defaultChecked={defaultWashed === null}
+          />
+          Don&apos;t know
         </label>
       </div>
     </div>
