@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AGE_CATEGORY_LABELS, GENDER_LABELS, type AgeCategory, type Gender } from "@/lib/garment-catalog";
+import { groupByGarment } from "@/lib/garment-breakdown";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -51,13 +52,7 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
 
   const totalQuantity = donation.items.reduce((sum, item) => sum + item.quantity, 0);
 
-  // One total per garment type regardless of who logged it or which gender/age
-  // it was for -- "4 Shirts, 4 Pants" rather than a row per log entry.
-  const byGarment = new Map<string, number>();
-  for (const item of donation.items) {
-    byGarment.set(item.garmentType, (byGarment.get(item.garmentType) ?? 0) + item.quantity);
-  }
-  const garmentOverview = [...byGarment.entries()].sort((a, b) => b[1] - a[1]);
+  const garmentOverview = groupByGarment(donation.items);
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">

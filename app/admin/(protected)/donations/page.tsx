@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RANGE_OPTIONS, resolveDateRange } from "@/lib/date-range";
+import { summarizeGarments } from "@/lib/garment-breakdown";
 import { CopyLinkButton } from "../copy-link-button";
 import { AddDonationForm } from "./add-donation-form";
 import { deleteDonation } from "./actions";
@@ -44,6 +45,7 @@ export default async function AdminDonationsPage({
     prisma.clothDonation.findMany({
       where: donatedAtFilter ? { donatedAt: donatedAtFilter } : undefined,
       orderBy: { donatedAt: "desc" },
+      include: { items: true },
     }),
     prisma.donationItem.aggregate({
       where: donatedAtFilter ? { donation: { donatedAt: donatedAtFilter } } : undefined,
@@ -157,6 +159,7 @@ export default async function AdminDonationsPage({
                 <TableHead>Washed</TableHead>
                 <TableHead>Collection point</TableHead>
                 <TableHead>Location</TableHead>
+                <TableHead>Clothes donated</TableHead>
                 <TableHead className="w-48" />
               </TableRow>
             </TableHeader>
@@ -180,6 +183,9 @@ export default async function AdminDonationsPage({
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {donation.location ?? <span className="italic">—</span>}
+                  </TableCell>
+                  <TableCell className="max-w-64 text-muted-foreground">
+                    {summarizeGarments(donation.items) || <span className="italic">—</span>}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
