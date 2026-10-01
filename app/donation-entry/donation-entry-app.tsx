@@ -17,7 +17,17 @@ import {
 
 type Donor = { id: string; donorNumber: number; donorName: string; phone: string; donatedAt: string };
 
-type Step = "gate" | "donor" | "gender" | "age" | "garment" | "quantity" | "added";
+type MyItem = {
+  id: string;
+  donationId: string;
+  gender: Gender;
+  ageCategory: AgeCategory | null;
+  garmentType: string;
+  quantity: number;
+  donation: { donorNumber: number; donorName: string };
+};
+
+type Step = "gate" | "donor" | "gender" | "age" | "garment" | "quantity" | "added" | "myEntries";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
@@ -199,6 +209,13 @@ export function DonationEntryApp() {
     quantity: number;
   } | null>(null);
 
+  // Set when correcting an existing entry rather than logging a new one --
+  // routes the same gender/age/garment/quantity screens to a PATCH instead
+  // of a POST, and "quantity" is the entry point rather than "gender".
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [myItems, setMyItems] = useState<MyItem[] | null>(null);
+  const [myItemsError, setMyItemsError] = useState<string | null>(null);
+
   async function loadDonors() {
     setDonorsError(null);
     try {
@@ -269,6 +286,62 @@ export function DonationEntryApp() {
     setSubmitError(null);
   }
 
+  async function loadMyItems() {
+    setMyItemsError(null);
+    try {
+      const res = await fetch("/api/donation-entry/my-items");
+      const json = await res.json();
+      if (json.ok) setMyItems(json.items);
+      else setMyItemsError("Could not load your entries.");
+    } catch {
+      setMyItemsError("Could not reach the server.");
+    }
+  }
+
+  function openMyEntries() {
+    loadMyItems();
+    setStep("myEntries");
+  }
+
+  function startEditItem(item: MyItem) {
+    setEditingItemId(item.id);
+    setSelectedDonor({
+      id: item.donationId,
+      donorNumber: item.donation.donorNumber,
+      donorName: item.donation.donorName,
+      phone: "",
+      donatedAt: "",
+    });
+    setGender(item.gender);
+    setAgeCategory(item.ageCategory);
+    setGarmentType(item.garmentType);
+    setQuantity(item.quantity);
+    setSubmitError(null);
+    setStep("quantity");
+  }
+
+  function cancelEdit() {
+    setEditingItemId(null);
+    setSelectedDonor(null);
+    resetItemState();
+    setStep("myEntries");
+  }
+
+  async function deleteMyItem(id: string) {
+    if (!window.confirm("Delete this entry? This can't be undone.")) return;
+    try {
+      const res = await fetch(`/api/donation-entry/items/${id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (json.ok) {
+        setMyItems((items) => (items ? items.filter((item) => item.id !== id) : items));
+      } else {
+        window.alert(json.error ?? "Could not delete that entry.");
+      }
+    } catch {
+      window.alert("Could not reach the server.");
+    }
+  }
+
   function pickDonor(donor: Donor) {
     setSelectedDonor(donor);
     resetItemState();
@@ -299,21 +372,27 @@ export function DonationEntryApp() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const res = await fetch("/api/donation-entry/items", {
-        method: "POST",
+      const url = editingItemId ? `/api/donation-entry/items/${editingItemId}` : "/api/donation-entry/items";
+      const body = editingItemId
+        ? { gender, ageCategory, garmentType, quantity }
+        : { donationId: selectedDonor.id, gender, ageCategory, garmentType, quantity };
+      const res = await fetch(url, {
+        method: editingItemId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          donationId: selectedDonor.id,
-          gender,
-          ageCategory,
-          garmentType,
-          quantity,
-        }),
+        body: JSON.stringify(body),
       });
       const json = await res.json();
       if (json.ok) {
-        setLastAdded({ garmentType, gender, ageCategory, quantity });
-        setStep("added");
+        if (editingItemId) {
+          setEditingItemId(null);
+          resetItemState();
+          setSelectedDonor(null);
+          await loadMyItems();
+          setStep("myEntries");
+        } else {
+          setLastAdded({ garmentType, gender, ageCategory, quantity });
+          setStep("added");
+        }
       } else {
         setSubmitError(json.error ?? "Something went wrong.");
       }
@@ -402,11 +481,16 @@ export function DonationEntryApp() {
 
       {step === "donor" && (
         <>
-          <div className="mb-5 flex items-center justify-between">
+          <div className="mb-5 flex items-center justify-between gap-3">
             <h1 className="font-heading text-xl font-semibold text-foreground">Who donated?</h1>
-            <button type="button" onClick={switchVolunteer} className="text-xs text-muted-foreground underline">
-              Not {volunteerName}?
-            </button>
+            <div className="flex shrink-0 items-center gap-3">
+              <button type="button" onClick={openMyEntries} className="text-xs text-muted-foreground underline">
+                My entries
+              </button>
+              <button type="button" onClick={switchVolunteer} className="text-xs text-muted-foreground underline">
+                Not {volunteerName}?
+              </button>
+            </div>
           </div>
           <Input
             value={donorFilter}
@@ -441,7 +525,7 @@ export function DonationEntryApp() {
         <>
           <BackBar
             title={`#${selectedDonor.donorNumber} · ${selectedDonor.donorName}`}
-            onBack={() => setStep("donor")}
+            onBack={() => (editingItemId ? cancelEdit() : setStep("donor"))}
           />
           <p className="mb-4 text-sm text-muted-foreground">Who is this item for?</p>
           <div className="grid grid-cols-2 gap-3">
@@ -535,7 +619,7 @@ export function DonationEntryApp() {
           </div>
           {submitError && <p className="mt-4 text-sm text-destructive">{submitError}</p>}
           <Button onClick={submitItem} disabled={submitting} className="mt-6 h-12 w-full text-base">
-            {submitting ? "Adding…" : "Add item"}
+            {editingItemId ? (submitting ? "Saving…" : "Save changes") : submitting ? "Adding…" : "Add item"}
           </Button>
         </>
       )}
@@ -580,6 +664,44 @@ export function DonationEntryApp() {
             </Button>
           </div>
         </div>
+      )}
+
+      {step === "myEntries" && (
+        <>
+          <BackBar title="My entries" onBack={() => setStep("donor")} />
+          {myItemsError && <p className="text-sm text-destructive">{myItemsError}</p>}
+          {myItems === null && !myItemsError && (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          )}
+          {myItems !== null && myItems.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              Nothing logged yet. Once you add an item it will show up here, so you can fix it
+              yourself without asking the admin.
+            </p>
+          )}
+          <div className="space-y-2.5">
+            {myItems?.map((item) => (
+              <div key={item.id} className="rounded-xl border-2 border-border bg-card px-4 py-3">
+                <p className="text-sm font-semibold text-foreground">
+                  {item.quantity} &times; {item.garmentType}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {GENDER_LABELS[item.gender]}
+                  {item.ageCategory ? `, ${AGE_CATEGORY_LABELS[item.ageCategory]}` : ""} &middot; for #
+                  {item.donation.donorNumber} &middot; {item.donation.donorName}
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <Button onClick={() => startEditItem(item)} variant="outline" size="sm" className="flex-1">
+                    Edit
+                  </Button>
+                  <Button onClick={() => deleteMyItem(item.id)} variant="outline" size="sm" className="flex-1">
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </main>
   );
