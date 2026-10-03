@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/table";
 import { RANGE_OPTIONS, resolveDateRange } from "@/lib/date-range";
 import { summarizeGarments } from "@/lib/garment-breakdown";
+import { getMonthlyClothesDonated } from "@/lib/monthly-clothes-stats";
+import { MonthlyLineChart } from "@/components/admin/monthly-line-chart";
 import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import { CopyLinkButton } from "../copy-link-button";
 import { AddDonationForm } from "./add-donation-form";
@@ -42,7 +44,7 @@ export default async function AdminDonationsPage({
     if (to) exportQuery.set("to", to);
   }
 
-  const [donations, itemsTotal] = await Promise.all([
+  const [donations, itemsTotal, monthlyStats] = await Promise.all([
     prisma.clothDonation.findMany({
       where: donatedAtFilter ? { donatedAt: donatedAtFilter } : undefined,
       orderBy: { donatedAt: "desc" },
@@ -52,6 +54,7 @@ export default async function AdminDonationsPage({
       where: donatedAtFilter ? { donation: { donatedAt: donatedAtFilter } } : undefined,
       _sum: { quantity: true },
     }),
+    getMonthlyClothesDonated(12),
   ]);
   const totalClothes = itemsTotal._sum.quantity ?? 0;
 
@@ -114,6 +117,14 @@ export default async function AdminDonationsPage({
             Apply
           </Button>
         </form>
+      </section>
+
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold text-foreground">Clothes donated by month</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Last 12 months, regardless of the filter above.</p>
+        <div className="mt-4">
+          <MonthlyLineChart data={monthlyStats} />
+        </div>
       </section>
 
       <section className="mt-6">
