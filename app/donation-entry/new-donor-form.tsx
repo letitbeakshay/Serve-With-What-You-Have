@@ -74,13 +74,12 @@ export function NewDonorForm({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="newDonorPhone">Mobile number</Label>
+          <Label htmlFor="newDonorPhone">Mobile number (optional)</Label>
           <Input
             id="newDonorPhone"
             name="phone"
             type="tel"
             inputMode="tel"
-            required
             className="h-12 text-base"
             placeholder="98765 43210"
           />

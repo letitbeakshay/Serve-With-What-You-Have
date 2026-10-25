@@ -20,7 +20,11 @@ export type ParseDonationResult = { error: string } | { data: DonationInput };
 
 const WASHED_VALUES = ["washed", "unwashed", "dont_know"] as const;
 
-export function parseDonationFormData(formData: FormData): ParseDonationResult {
+export function parseDonationFormData(
+  formData: FormData,
+  options?: { requirePhone?: boolean },
+): ParseDonationResult {
+  const requirePhone = options?.requirePhone ?? true;
   const isAnonymous = formData.get("anonymous") === "on";
   const donorName = isAnonymous ? "Anonymous" : String(formData.get("donorName") ?? "").trim();
   const phone = isAnonymous ? "" : String(formData.get("phone") ?? "").trim();
@@ -31,7 +35,7 @@ export function parseDonationFormData(formData: FormData): ParseDonationResult {
   const location = String(formData.get("location") ?? "").trim();
 
   if (!isAnonymous && !donorName) return { error: "Please enter the donor's name." };
-  if (!isAnonymous && !phone) return { error: "Please enter a mobile number." };
+  if (!isAnonymous && requirePhone && !phone) return { error: "Please enter a mobile number." };
   if (!donatedAtRaw) return { error: "Please enter the date they donated." };
   if (!(WASHED_VALUES as readonly string[]).includes(washedRaw)) {
     return { error: "Please say whether the clothes are washed, unwashed, or you don't know." };

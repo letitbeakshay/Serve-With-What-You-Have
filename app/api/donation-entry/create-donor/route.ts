@@ -15,13 +15,23 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ ok: false, error: "Not signed in." }, { status: 401 });
 
   const formData = await request.formData();
-  const result = parseDonationFormData(formData);
+  // Mobile number is optional here (unlike the admin/public donation
+  // forms) -- a volunteer meeting someone new shouldn't be blocked just
+  // because the donor didn't want to give a number.
+  const result = parseDonationFormData(formData, { requirePhone: false });
   if ("error" in result) return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
 
   const { isAnonymous, ...data } = result.data;
-  const donor = isAnonymous
-    ? await getOrCreateAnonymousDonor()
-    : await findOrCreateDonor({ phone: data.phone, name: data.donorName, email: data.email });
+  // No number on file -> this donation isn't uniquely identifiable by
+  // phone, so it links to the shared Anonymous donor instead of trying to
+  // match/create one by an empty phone (which would wrongly merge every
+  // no-number donor into a single person). The typed name is kept as-is on
+  // this donation, even though the canonical Donor it's linked to is
+  // "Anonymous".
+  const donor =
+    isAnonymous || !data.phone
+      ? await getOrCreateAnonymousDonor()
+      : await findOrCreateDonor({ phone: data.phone, name: data.donorName, email: data.email });
 
   const donation = await prisma.clothDonation.create({ data: { ...data, donorId: donor.id } });
 
