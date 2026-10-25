@@ -39,6 +39,7 @@ export async function POST(request: Request) {
     ok: true,
     donor: {
       id: donation.id,
+      donorId: donation.donorId,
       donorNumber: donation.donorNumber,
       donorName: donation.donorName,
       phone: donation.phone,

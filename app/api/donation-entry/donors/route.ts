@@ -14,7 +14,7 @@ export async function GET() {
 
   const donors = await prisma.clothDonation.findMany({
     orderBy: { donatedAt: "desc" },
-    select: { id: true, donorNumber: true, donorName: true, phone: true, donatedAt: true },
+    select: { id: true, donorId: true, donorNumber: true, donorName: true, phone: true, donatedAt: true },
   });
 
   // The real number never leaves the server -- masked here, not just hidden

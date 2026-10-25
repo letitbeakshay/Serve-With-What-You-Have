@@ -15,8 +15,37 @@ import {
   type Gender,
 } from "@/lib/garment-catalog";
 import { NewDonorForm, type NewDonor } from "./new-donor-form";
+import { groupByGarment } from "@/lib/garment-breakdown";
 
-type Donor = { id: string; donorNumber: number; donorName: string; phone: string; donatedAt: string };
+type Donor = {
+  id: string;
+  donorId: string | null;
+  donorNumber: number;
+  donorName: string;
+  phone: string;
+  donatedAt: string;
+};
+
+type DonorHistory = {
+  donor: { id: string; donorNumber: number | null; name: string; phone: string | null };
+  donations: Array<{
+    id: string;
+    donorNumber: number;
+    donatedAt: string;
+    washed: boolean | null;
+    collectionPoint: string | null;
+    location: string | null;
+  }>;
+  items: Array<{
+    id: string;
+    garmentType: string;
+    quantity: number;
+    gender: Gender;
+    ageCategory: AgeCategory | null;
+    volunteerName: string;
+    createdAt: string;
+  }>;
+};
 
 type MyItem = {
   id: string;
@@ -28,13 +57,32 @@ type MyItem = {
   donation: { donorNumber: number; donorName: string };
 };
 
-type Step = "gate" | "donor" | "newDonor" | "gender" | "age" | "garment" | "quantity" | "added" | "myEntries";
+type Step =
+  | "gate"
+  | "donor"
+  | "newDonor"
+  | "donorHistory"
+  | "gender"
+  | "age"
+  | "garment"
+  | "quantity"
+  | "added"
+  | "myEntries";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", {
   day: "numeric",
   month: "short",
   year: "numeric",
   timeZone: "UTC",
+});
+
+// For real timestamps (when an item was logged), unlike dateFormatter above
+// which is for donatedAt -- a plain calendar date anchored to noon UTC.
+const dateTimeFormatter = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  minute: "2-digit",
 });
 
 // Six dots flung outward from the success checkmark (see .success-confetti
@@ -219,6 +267,9 @@ export function DonationEntryApp() {
   const [myItems, setMyItems] = useState<MyItem[] | null>(null);
   const [myItemsError, setMyItemsError] = useState<string | null>(null);
 
+  const [donorHistory, setDonorHistory] = useState<DonorHistory | null>(null);
+  const [donorHistoryError, setDonorHistoryError] = useState<string | null>(null);
+
   async function loadDonors() {
     setDonorsError(null);
     try {
@@ -306,10 +357,34 @@ export function DonationEntryApp() {
     setStep("myEntries");
   }
 
+  async function openDonorHistory(donor: Donor) {
+    if (!donor.donorId) {
+      setDonorHistory(null);
+      setDonorHistoryError("This donor doesn't have a history record yet.");
+      setStep("donorHistory");
+      return;
+    }
+    setDonorHistory(null);
+    setDonorHistoryError(null);
+    setStep("donorHistory");
+    try {
+      const res = await fetch(`/api/donation-entry/donor-history/${donor.donorId}`);
+      const json = await res.json();
+      if (json.ok) {
+        setDonorHistory({ donor: json.donor, donations: json.donations, items: json.items });
+      } else {
+        setDonorHistoryError(json.error ?? "Could not load this donor's history.");
+      }
+    } catch {
+      setDonorHistoryError("Could not reach the server. Check your connection.");
+    }
+  }
+
   function startEditItem(item: MyItem) {
     setEditingItemId(item.id);
     setSelectedDonor({
       id: item.donationId,
+      donorId: null,
       donorNumber: item.donation.donorNumber,
       donorName: item.donation.donorName,
       phone: "",
@@ -561,12 +636,27 @@ export function DonationEntryApp() {
               </p>
             )}
             {filteredDonors.map((donor) => (
-              <OptionCard
-                key={donor.id}
-                label={`#${donor.donorNumber} · ${donor.donorName}`}
-                sublabel={`${donor.phone} · ${dateFormatter.format(new Date(donor.donatedAt))}`}
-                onClick={() => pickDonor(donor)}
-              />
+              <div key={donor.id} className="flex gap-2">
+                <div className="flex-1">
+                  <OptionCard
+                    label={`#${donor.donorNumber} · ${donor.donorName}`}
+                    sublabel={`${donor.phone} · ${dateFormatter.format(new Date(donor.donatedAt))}`}
+                    onClick={() => pickDonor(donor)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => openDonorHistory(donor)}
+                  aria-label={`View ${donor.donorName}'s donation history`}
+                  className="flex w-14 shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-border bg-card text-muted-foreground active:bg-muted"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <span className="text-[10px] font-medium">View</span>
+                </button>
+              </div>
             ))}
           </div>
         </>
@@ -574,6 +664,66 @@ export function DonationEntryApp() {
 
       {step === "newDonor" && (
         <NewDonorForm onCreated={handleNewDonorCreated} onBack={() => setStep("donor")} />
+      )}
+
+      {step === "donorHistory" && (
+        <>
+          <BackBar title="Donation history" onBack={() => setStep("donor")} />
+          {donorHistoryError && <p className="text-sm text-destructive">{donorHistoryError}</p>}
+          {!donorHistory && !donorHistoryError && (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          )}
+          {donorHistory && (
+            <>
+              <div className="rounded-xl border-2 border-border bg-card px-4 py-3">
+                <p className="text-base font-semibold text-foreground">
+                  {donorHistory.donor.donorNumber ? `#${donorHistory.donor.donorNumber} · ` : ""}
+                  {donorHistory.donor.name}
+                </p>
+                {donorHistory.donor.phone && (
+                  <p className="mt-0.5 text-sm text-muted-foreground">{donorHistory.donor.phone}</p>
+                )}
+              </div>
+
+              {donorHistory.items.length === 0 ? (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Nothing logged yet for this donor. View-only -- to add something, go back and
+                  select them.
+                </p>
+              ) : (
+                <>
+                  <p className="mt-4 text-xs font-medium text-muted-foreground">Overall</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {groupByGarment(donorHistory.items).map(([garmentType, quantity]) => (
+                      <span
+                        key={garmentType}
+                        className="rounded-full border border-border bg-card px-3 py-1.5 text-sm text-foreground"
+                      >
+                        {quantity} &times; {garmentType}
+                      </span>
+                    ))}
+                  </div>
+
+                  <p className="mt-5 text-xs font-medium text-muted-foreground">Logged entries</p>
+                  <div className="mt-2 space-y-2.5">
+                    {donorHistory.items.map((item) => (
+                      <div key={item.id} className="rounded-xl border-2 border-border bg-card px-4 py-3">
+                        <p className="text-sm font-semibold text-foreground">
+                          {item.quantity} &times; {item.garmentType}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {GENDER_LABELS[item.gender]}
+                          {item.ageCategory ? `, ${AGE_CATEGORY_LABELS[item.ageCategory]}` : ""} &middot; by{" "}
+                          {item.volunteerName} &middot; {dateTimeFormatter.format(new Date(item.createdAt))}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </>
       )}
 
       {step === "gender" && selectedDonor && (

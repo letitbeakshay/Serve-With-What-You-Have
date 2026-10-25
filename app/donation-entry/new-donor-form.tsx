@@ -7,7 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WashedField } from "@/components/cloth-donation/washed-field";
 
-export type NewDonor = { id: string; donorNumber: number; donorName: string; phone: string; donatedAt: string };
+export type NewDonor = {
+  id: string;
+  donorId: string | null;
+  donorNumber: number;
+  donorName: string;
+  phone: string;
+  donatedAt: string;
+};
 
 function todayISODate(): string {
   return new Date().toLocaleDateString("en-CA"); // yyyy-mm-dd, in the local timezone
