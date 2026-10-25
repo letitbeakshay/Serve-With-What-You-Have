@@ -12,9 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RANGE_OPTIONS, resolveDateRange } from "@/lib/date-range";
-import { summarizeGarments } from "@/lib/garment-breakdown";
+import { groupByGarment, summarizeGarments } from "@/lib/garment-breakdown";
 import { getMonthlyClothesDonated } from "@/lib/monthly-clothes-stats";
 import { MonthlyLineChart } from "@/components/admin/monthly-line-chart";
+import { GarmentBreakdownBars } from "@/components/admin/garment-breakdown-bars";
 import { ConfirmRemoveButton } from "@/components/admin/confirm-remove-button";
 import { CopyLinkButton } from "../copy-link-button";
 import { AddDonationForm } from "./add-donation-form";
@@ -57,6 +58,7 @@ export default async function AdminDonationsPage({
     getMonthlyClothesDonated(12),
   ]);
   const totalClothes = itemsTotal._sum.quantity ?? 0;
+  const garmentBreakdown = groupByGarment(donations.flatMap((d) => d.items));
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -117,6 +119,16 @@ export default async function AdminDonationsPage({
             Apply
           </Button>
         </form>
+      </section>
+
+      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-6">
+        <h2 className="font-heading text-lg font-semibold text-foreground">Clothes donated by type</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {range === "all" ? "All time" : "This period"}, by garment type, most donated first.
+        </p>
+        <div className="mt-4">
+          <GarmentBreakdownBars data={garmentBreakdown} />
+        </div>
       </section>
 
       <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-6">
