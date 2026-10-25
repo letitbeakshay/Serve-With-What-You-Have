@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { WashedField } from "@/components/cloth-donation/washed-field";
-import { AnonymousToggle } from "@/components/cloth-donation/anonymous-toggle";
 
 export type NewDonor = { id: string; donorNumber: number; donorName: string; phone: string; donatedAt: string };
 
@@ -21,7 +20,6 @@ export function NewDonorForm({
   onCreated: (donor: NewDonor) => void;
   onBack: () => void;
 }) {
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,14 +62,12 @@ export function NewDonorForm({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <AnonymousToggle idPrefix="new-" checked={isAnonymous} onChange={setIsAnonymous} />
         <div className="space-y-2">
           <Label htmlFor="newDonorName">Name</Label>
           <Input
             id="newDonorName"
             name="donorName"
-            required={!isAnonymous}
-            disabled={isAnonymous}
+            required
             className="h-12 text-base"
             placeholder="Priya Kumar"
             autoFocus
@@ -84,8 +80,7 @@ export function NewDonorForm({
             name="phone"
             type="tel"
             inputMode="tel"
-            required={!isAnonymous}
-            disabled={isAnonymous}
+            required
             className="h-12 text-base"
             placeholder="98765 43210"
           />
