@@ -33,7 +33,22 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const result = validateDonationItemInput(body);
   if ("error" in result) return NextResponse.json({ ok: false, error: result.error }, { status: 400 });
 
-  await prisma.donationItem.update({ where: { id }, data: result.data });
+  // donationId is optional -- lets a volunteer correct who an entry was
+  // actually logged against, not just the gender/age/garment/quantity.
+  const { donationId } = body as Record<string, unknown>;
+  let donationUpdate: { donationId: string } | Record<string, never> = {};
+  if (donationId !== undefined) {
+    if (typeof donationId !== "string" || !donationId) {
+      return NextResponse.json({ ok: false, error: "Please choose a donor." }, { status: 400 });
+    }
+    const donation = await prisma.clothDonation.findUnique({ where: { id: donationId } });
+    if (!donation) {
+      return NextResponse.json({ ok: false, error: "That donor could not be found." }, { status: 404 });
+    }
+    donationUpdate = { donationId };
+  }
+
+  await prisma.donationItem.update({ where: { id }, data: { ...result.data, ...donationUpdate } });
   return NextResponse.json({ ok: true });
 }
 

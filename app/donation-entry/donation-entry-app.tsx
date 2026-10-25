@@ -347,8 +347,15 @@ export function DonationEntryApp() {
 
   function pickDonor(donor: Donor) {
     setSelectedDonor(donor);
-    resetItemState();
-    setStep("gender");
+    if (editingItemId) {
+      // Reassigning who an existing entry belongs to -- keep the
+      // gender/age/garment/quantity already chosen, just change the donor
+      // and return to where the edit left off.
+      setStep("quantity");
+    } else {
+      resetItemState();
+      setStep("gender");
+    }
   }
 
   function handleNewDonorCreated(donor: NewDonor) {
@@ -383,9 +390,7 @@ export function DonationEntryApp() {
     setSubmitError(null);
     try {
       const url = editingItemId ? `/api/donation-entry/items/${editingItemId}` : "/api/donation-entry/items";
-      const body = editingItemId
-        ? { gender, ageCategory, garmentType, quantity }
-        : { donationId: selectedDonor.id, gender, ageCategory, garmentType, quantity };
+      const body = { donationId: selectedDonor.id, gender, ageCategory, garmentType, quantity };
       const res = await fetch(url, {
         method: editingItemId ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -507,14 +512,24 @@ export function DonationEntryApp() {
       {step === "donor" && (
         <>
           <div className="mb-5 flex items-center justify-between gap-3">
-            <h1 className="font-heading text-xl font-semibold text-foreground">Who donated?</h1>
+            <h1 className="font-heading text-xl font-semibold text-foreground">
+              {editingItemId ? "Change donor to…" : "Who donated?"}
+            </h1>
             <div className="flex shrink-0 items-center gap-3">
-              <button type="button" onClick={openMyEntries} className="text-xs text-muted-foreground underline">
-                My entries
-              </button>
-              <button type="button" onClick={switchVolunteer} className="text-xs text-muted-foreground underline">
-                Not {volunteerName}?
-              </button>
+              {editingItemId ? (
+                <button type="button" onClick={() => setStep("quantity")} className="text-xs text-muted-foreground underline">
+                  Cancel
+                </button>
+              ) : (
+                <>
+                  <button type="button" onClick={openMyEntries} className="text-xs text-muted-foreground underline">
+                    My entries
+                  </button>
+                  <button type="button" onClick={switchVolunteer} className="text-xs text-muted-foreground underline">
+                    Not {volunteerName}?
+                  </button>
+                </>
+              )}
             </div>
           </div>
           <Input
@@ -629,6 +644,16 @@ export function DonationEntryApp() {
       {step === "quantity" && garmentType && selectedDonor && (
         <>
           <BackBar title={`#${selectedDonor.donorNumber} · ${garmentType}`} onBack={() => setStep("garment")} />
+          {editingItemId && (
+            <div className="mb-4 flex items-center justify-between rounded-lg bg-muted px-3 py-2 text-sm">
+              <span className="text-muted-foreground">
+                For <span className="font-medium text-foreground">#{selectedDonor.donorNumber} · {selectedDonor.donorName}</span>
+              </span>
+              <button type="button" onClick={() => setStep("donor")} className="font-semibold text-primary">
+                Change donor
+              </button>
+            </div>
+          )}
           <p className="text-sm text-muted-foreground">How many?</p>
           <div className="mt-4 flex items-center justify-center gap-4">
             <button
