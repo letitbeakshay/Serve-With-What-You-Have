@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { RANGE_OPTIONS, resolveDateRange } from "@/lib/date-range";
 import { groupByGarment, summarizeGarments } from "@/lib/garment-breakdown";
+import { GENDERS, GENDER_LABELS } from "@/lib/garment-catalog";
 import { getMonthlyClothesDonated } from "@/lib/monthly-clothes-stats";
 import { MonthlyLineChart } from "@/components/admin/monthly-line-chart";
 import { GarmentBreakdownBars } from "@/components/admin/garment-breakdown-bars";
@@ -58,7 +59,17 @@ export default async function AdminDonationsPage({
     getMonthlyClothesDonated(12),
   ]);
   const totalClothes = itemsTotal._sum.quantity ?? 0;
-  const garmentBreakdown = groupByGarment(donations.flatMap((d) => d.items));
+
+  const allItems = donations.flatMap((d) => d.items);
+  const genderBreakdowns = GENDERS.map((gender) => {
+    const items = allItems.filter((item) => item.gender === gender);
+    return {
+      gender,
+      label: GENDER_LABELS[gender],
+      total: items.reduce((sum, item) => sum + item.quantity, 0),
+      breakdown: groupByGarment(items),
+    };
+  });
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -121,13 +132,24 @@ export default async function AdminDonationsPage({
         </form>
       </section>
 
-      <section className="mt-6 rounded-xl border border-border bg-card p-4 sm:p-6">
+      <section className="mt-6">
         <h2 className="font-heading text-lg font-semibold text-foreground">Clothes donated by type</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          {range === "all" ? "All time" : "This period"}, by garment type, most donated first.
+          {range === "all" ? "All time" : "This period"}, by garment type, most donated first --
+          split by who it&apos;s for so male, female, and general totals don&apos;t mix.
         </p>
-        <div className="mt-4">
-          <GarmentBreakdownBars data={garmentBreakdown} />
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {genderBreakdowns.map(({ gender, label, total, breakdown }) => (
+            <div key={gender} className="rounded-xl border border-border bg-card p-4 sm:p-6">
+              <div className="flex items-baseline justify-between gap-2">
+                <h3 className="font-heading text-base font-semibold text-foreground">{label}</h3>
+                <p className="text-sm text-muted-foreground">{total} total</p>
+              </div>
+              <div className="mt-4">
+                <GarmentBreakdownBars data={breakdown} />
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
