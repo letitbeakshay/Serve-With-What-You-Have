@@ -72,7 +72,7 @@ export default async function AdminDonationsPage({
   });
 
   return (
-    <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+    <main className="mx-auto min-h-dvh min-w-0 max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       <h1 className="font-heading text-xl font-semibold text-foreground sm:text-2xl">
         Cloth donations
       </h1>
