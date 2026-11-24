@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { AGE_CATEGORY_LABELS, GENDER_LABELS, type AgeCategory, type Gender } from "@/lib/garment-catalog";
-import { groupByGarment } from "@/lib/garment-breakdown";
+import { groupByAgeAndGender, groupByGarment } from "@/lib/garment-breakdown";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -53,6 +53,13 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
   const totalQuantity = donation.items.reduce((sum, item) => sum + item.quantity, 0);
 
   const garmentOverview = groupByGarment(donation.items);
+  const ageGenderOverview = groupByAgeAndGender(
+    donation.items.map((item) => ({
+      gender: item.gender as Gender,
+      ageCategory: item.ageCategory as AgeCategory | null,
+      quantity: item.quantity,
+    })),
+  );
 
   return (
     <main className="mx-auto min-h-dvh min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
@@ -99,6 +106,32 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
               >
                 {quantity} &times; {garmentType}
               </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {ageGenderOverview.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-heading text-lg font-semibold text-foreground">By age &amp; gender</h2>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {ageGenderOverview.map((group) => (
+              <div key={group.key} className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-foreground">{group.label}</h3>
+                  <p className="text-sm text-muted-foreground">{group.total} total</p>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {group.byGender.map((g) => (
+                    <span
+                      key={g.gender}
+                      className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-foreground"
+                    >
+                      {g.quantity} &times; {g.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
