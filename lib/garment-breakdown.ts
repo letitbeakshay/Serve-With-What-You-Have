@@ -21,26 +21,31 @@ export function summarizeGarments(items: QuantityItem[]): string {
     .join(", ");
 }
 
-type AgeGenderItem = { gender: Gender; ageCategory: AgeCategory | null; quantity: number };
+type AgeGenderItem = { gender: Gender; ageCategory: AgeCategory | null; quantity: number; garmentType: string };
 
 export type AgeGenderGroup = {
   key: string;
   label: string;
   total: number;
-  byGender: Array<{ gender: Gender; label: string; quantity: number }>;
+  byGender: Array<{ gender: Gender; label: string; quantity: number; garments: Array<[string, number]> }>;
 };
 
-// Adult/Teen/Child, each split by who it's for -- plus a trailing "General"
-// bucket for items with no age category at all (bedsheets, blankets, and
-// the like, which aren't gendered or aged). Buckets with nothing logged are
-// left out entirely rather than shown as a zero.
+// Adult/Teen/Child, each split by who it's for and then by garment type --
+// plus a trailing "General" bucket for items with no age category at all
+// (bedsheets, blankets, and the like, which aren't gendered or aged).
+// Buckets with nothing logged are left out entirely rather than shown as a
+// zero.
 export function groupByAgeAndGender(items: AgeGenderItem[]): AgeGenderGroup[] {
   function byGenderWithin(bucket: AgeGenderItem[]) {
-    return GENDERS.map((gender) => ({
-      gender,
-      label: GENDER_LABELS[gender],
-      quantity: bucket.filter((item) => item.gender === gender).reduce((sum, item) => sum + item.quantity, 0),
-    })).filter((g) => g.quantity > 0);
+    return GENDERS.map((gender) => {
+      const genderItems = bucket.filter((item) => item.gender === gender);
+      return {
+        gender,
+        label: GENDER_LABELS[gender],
+        quantity: genderItems.reduce((sum, item) => sum + item.quantity, 0),
+        garments: groupByGarment(genderItems),
+      };
+    }).filter((g) => g.quantity > 0);
   }
 
   const groups: AgeGenderGroup[] = [];

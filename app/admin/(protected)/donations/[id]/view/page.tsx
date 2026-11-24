@@ -58,6 +58,7 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
       gender: item.gender as Gender,
       ageCategory: item.ageCategory as AgeCategory | null,
       quantity: item.quantity,
+      garmentType: item.garmentType,
     })),
   );
 
@@ -114,21 +115,30 @@ export default async function ViewDonationPage({ params }: { params: Promise<{ i
       {ageGenderOverview.length > 0 && (
         <div className="mt-8">
           <h2 className="font-heading text-lg font-semibold text-foreground">By age &amp; gender</h2>
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {ageGenderOverview.map((group) => (
               <div key={group.key} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex items-baseline justify-between gap-2">
                   <h3 className="text-sm font-semibold text-foreground">{group.label}</h3>
                   <p className="text-sm text-muted-foreground">{group.total} total</p>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 space-y-3">
                   {group.byGender.map((g) => (
-                    <span
-                      key={g.gender}
-                      className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-foreground"
-                    >
-                      {g.quantity} &times; {g.label}
-                    </span>
+                    <div key={g.gender}>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {g.quantity} &times; {g.label}
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {g.garments.map(([garmentType, quantity]) => (
+                          <span
+                            key={garmentType}
+                            className="rounded-full border border-border bg-background px-2 py-0.5 text-[11px] text-foreground"
+                          >
+                            {quantity} &times; {garmentType}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
